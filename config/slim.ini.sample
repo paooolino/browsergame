@@ -1,0 +1,16 @@
+;
+;
+;
+
+displayErrorDetails = true
+addContentLengthHeader = false
+determineRouteBeforeAppMiddleware = true
+
+;
+;
+;
+
+DB_HOST = localhost
+DB_USER = root
+DB_PASS = 
+DB_NAME = 
