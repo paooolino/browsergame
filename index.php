@@ -2,8 +2,8 @@
   require __DIR__ . '/vendor/autoload.php';
 
   // Instantiate the Slim App
-  $slim_settings = require __DIR__ . '/config/slim.php';
-  $app = new Slim\App($slim_settings);
+  $slim_config = parse_ini_file(__DIR__ . '/config/slim.ini', true, INI_SCANNER_RAW);
+  $app = new Slim\App($slim_config);
 
   // Set up dependencies
   require __DIR__ . '/src/dependencies.php';
