@@ -1,15 +1,11 @@
 <?php
 namespace BGame\Controller;   
   
-class UserCalendar {
-  private $view;
-  
-  public function __construct($view) {
-    $this->view = $view;
-  }
-  
+final class UserCalendar extends BaseController { 
   public function __invoke($request, $response, $args) {
-    return $this->view->render($response, 'template.php', [
+    return $this->view->render($response, '.php', [
+      "templatePath" => $this->templatePath,
+      "appVersion" => ""
     ]);
   }
 }

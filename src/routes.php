@@ -1,9 +1,12 @@
 <?php
   $app->get('/', 'BGame\Controller\Home')->setName('HOME');
   $app->get('/register', 'BGame\Controller\Register')->setName('REGISTER');
+  $app->post('/register', 'BGame\Controller\Register_post')->setName('REGISTER:POST');
   $app->get('/register-confirm', 'BGame\Controller\RegisterConfirm')->setName('REGISTER_CONFIRM');
   $app->get('/login', 'BGame\Controller\Login')->setName('LOGIN');
+  $app->post('/login', 'BGame\Controller\Login_post')->setName('LOGIN:POST');
   $app->get('/lost-password', 'BGame\Controller\LostPassword')->setName('LOST_PASSWORD');
+  $app->post('/lost-password', 'BGame\Controller\LostPassword_post')->setName('LOST_PASSWORD:POST');
   $app->get('/manager/{id}', 'BGame\Controller\Manager')->setName('MANAGER');
   $app->get('/team/{id}', 'BGame\Controller\Team')->setName('TEAM');
   $app->get('/player/{id}', 'BGame\Controller\Player')->setName('PLAYER');

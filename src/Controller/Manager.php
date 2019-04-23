@@ -1,15 +1,11 @@
 <?php
 namespace BGame\Controller;   
   
-class Manager {
-  private $view;
-  
-  public function __construct($view) {
-    $this->view = $view;
-  }
-  
+final class Manager extends BaseController { 
   public function __invoke($request, $response, $args) {
-    return $this->view->render($response, 'template.php', [
+    return $this->view->render($response, 'manager.php', [
+      "templatePath" => $this->templatePath,
+      "appVersion" => ""
     ]);
   }
 }
