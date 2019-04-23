@@ -60,7 +60,7 @@ foreach ($routes_config as $route_name => $route_config) {
   $routes_code .= "  \$app->$method('" . $route_config["path"] . "', '" . $controllerClass . "')->setName('" . $route_name . "');\r\n";
 
   $controller_factories_code .= "\$container['$controllerClass'] = function (\$c) {\r\n";
-  $controller_factories_code .= "  return new $controllerClass(\$c->view);\r\n";
+  $controller_factories_code .= "  return new $controllerClass(\$c->view, \$c->app);\r\n";
   $controller_factories_code .= "};\r\n";
   $controller_factories_code .= "\r\n";
 }
@@ -69,6 +69,8 @@ $code = <<<END_OF_CODE
 <?php
 $routes_code
   
+\$app->add('$namespace\Middleware\AppInit');
+
 END_OF_CODE;
 
 mkdir_ifnotexists(__DIR__ . '/src');
@@ -98,6 +100,12 @@ $code = <<<END_OF_CODE
 
 \$container['app'] = function (\$c) {
   return new $namespace\App();
+};
+
+// middleware factories
+
+\$container['$namespace\Middleware\AppInit'] = function (\$c) {
+  return new $namespace\Middleware\AppInit(\$c->app);
 };
 
 END_OF_CODE;
@@ -131,6 +139,36 @@ END_OF_CODE;
 
 mkdir_ifnotexists(__DIR__ . '/src');
 file_put_contents(__DIR__ . '/src/App.php', $code);
+
+
+
+// ============================================================================
+//  Middleware
+// ============================================================================
+
+$namespace = MAIN_NAMESPACE_NAME;
+
+$code = <<<END_OF_CODE
+<?php
+namespace $namespace\\Middleware;
+
+class AppInit {
+  private \$app;
+  
+  public function __construct(\$app) {
+    \$this->app = \$app;
+  }
+  
+  public function __invoke(\$request, \$response, \$next) {
+    \$this->app->templatePath = '/' . \$request->getUri()->getBasePath();
+    return \$next(\$request, \$response);
+  }
+}
+END_OF_CODE;
+
+mkdir_ifnotexists(__DIR__ . '/src/Middleware');
+file_put_contents(__DIR__ . '/src/Middleware/AppInit.php', $code);
+
 
 
 // ============================================================================
@@ -184,11 +222,10 @@ namespace $namespace;
   
 class BaseController {
   protected \$view;
-  protected \$templatePath;
   
-  public function __construct(\$view) {
+  public function __construct(\$view, \$app) {
     \$this->view = \$view;
-    \$this->templatePath = "";
+    \$this->templatePath = \$app->templatePath;
   }
 }
 
