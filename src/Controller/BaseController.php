@@ -3,10 +3,9 @@ namespace BGame\Controller;
   
 class BaseController {
   protected $view;
-  protected $templatePath;
   
-  public function __construct($view) {
+  public function __construct($view, $app) {
     $this->view = $view;
-    $this->templatePath = "";
+    $this->templatePath = $app->templatePath;
   }
 }

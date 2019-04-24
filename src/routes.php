@@ -27,3 +27,4 @@
   $app->get('/standings', 'BGame\Controller\UserStandings')->setName('USER_STANDINGS');
 
   
+$app->add('BGame\Middleware\AppInit');
