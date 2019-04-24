@@ -5,7 +5,8 @@
     },
     "autoload": {
       "psr-4": {
-        "BGame\\": "src/"
+        "BGame\\": "src/",
+        "NS\\": "app_template/src/"
       }
     }
 }
