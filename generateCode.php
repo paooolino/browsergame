@@ -1,311 +1,188 @@
 <?php
-define("MAIN_NAMESPACE_NAME", "BGame");
+$MAIN_NAMESPACE_NAME = "BGame";
+$APP_DIRECTORY = "BGame";
+
+$config = parse_ini_file(__DIR__ . '../generateCode_config.ini', true, INI_SCANNER_RAW);
 
 // ============================================================================
-//  index.php
+//  functions
 // ============================================================================
 
-$code = <<<END_OF_CODE
-<?php
-  require __DIR__ . '/vendor/autoload.php';
-
-  // Instantiate the Slim App
-  \$slim_settings = parse_ini_file(__DIR__ . '/config/slim.ini', true, INI_SCANNER_RAW);
-  \$app = new Slim\App([
-    "settings" => \$slim_settings
-  ]);
-
-  // Set up dependencies
-  require __DIR__ . '/src/dependencies.php';
-
-  // App routes
-  require __DIR__ . '/src/routes.php';
-
-  \$app->run();
-
-  die();
-
-END_OF_CODE;
-
-file_put_contents(__DIR__ . '/index.php', $code);
-
-
-
-// ============================================================================
-//  routes and controllers
-// ============================================================================
-
-makebaseControllerClass();
-
-$routes_code = '';
-$controller_factories_code = '';
-$namespace = MAIN_NAMESPACE_NAME;
-$routes_config = parse_ini_file(__DIR__ . '/config/routes.ini', true, INI_SCANNER_RAW);
-foreach ($routes_config as $route_name => $route_config) {
-  $controllerClass = str_replace(":", "_", $route_config["controllerClass"] ?? MAIN_NAMESPACE_NAME . '\Controller\\' . str_replace(" " , "", ucwords(str_replace("_", " ", strtolower($route_name)))));
-  $models = my_explode($route_config["models"] ?? "");
-  $actions = my_explode($route_config["actions"] ?? "");
-  $widgets = my_explode($route_config["widgets"] ?? "");
-
-  $template = $route_config["template"] ?? "";
+function create_file($dir, $filename, $code, $force=true) {
+  if (!is_dir($dir))
+    mkdir($dir, 0777, true);  
   
-  makeClass($controllerClass, $template, $models, $actions);
-  
-  if ($template != "")
-    makeTemplate($template, $widgets);
-  
-  $method = "get";
-  if (strpos($route_name, ":") !== false) 
-    $method = strtolower(explode(":", $route_name)[1]);
-  $routes_code .= "  \$app->$method('" . $route_config["path"] . "', '" . $controllerClass . "')->setName('" . $route_name . "');\r\n";
-
-  $controller_factories_code .= "\$container['$controllerClass'] = function (\$c) {\r\n";
-  $controller_factories_code .= "  return new $controllerClass(\$c->view, \$c->app);\r\n";
-  $controller_factories_code .= "};\r\n";
-  $controller_factories_code .= "\r\n";
+  $file = $dir . '/' . $filename;
+  if ($force || !file_exists($file))
+    file_put_contents($file, $code);
 }
 
-$code = <<<END_OF_CODE
-<?php
-$routes_code
-  
-\$app->add('$namespace\Middleware\AppInit');
+function longComment($s) {
+  $longrow = '// -----------------------------------------------------------------------------';
+  return "\r\n$longrow\r\n// $s\r\n$longrow\r\n";
+}
 
-END_OF_CODE;
-
-mkdir_ifnotexists(__DIR__ . '/src');
-file_put_contents(__DIR__ . '/src/routes.php', $code);
-
-
+function sToArr($s) {
+  return array_map('trim', explode(', ', $s));
+}
 
 // ============================================================================
-//  dependencies
+//  bootstrap.php
 // ============================================================================
-
-$namespace = MAIN_NAMESPACE_NAME;
-
 $code = <<<END_OF_CODE
 <?php
-// DIC configuration
+require __DIR__ . '/../vendor/autoload.php';
 
+// Instantiate the Slim App
+\$settings = require __DIR__ . '/settings.php';
+\$app = new Slim\App(\$settings);
+
+// get the DIC container
 \$container = \$app->getContainer();
 
+// Set up dependencies
+require __DIR__ . '/dependencies.php';
+
+// App middleware
+require __DIR__ . '/middleware.php';
+
+// App routes
+require __DIR__ . '/routes.php';
+
+\$app->run();
+END_OF_CODE;
+create_file(__DIR__ . '/' . $APP_DIRECTORY, 'bootstrap.php', $code);
+
+// ============================================================================
+//  dependencies.php
+// ============================================================================
+$services_code = <<<END_OF_CODE
+<?php
+
 \$container['view'] = function (\$c) {
-  \$templatePath = __DIR__ . '/../templates/'
-    . \$c->settings['templateName'];
-  return new Slim\Views\PhpRenderer(\$templatePath, [
-    "router" => \$c->router
-  ]);
+  \$templatePath = __DIR__ . '/templates/' . \$c->settings["templateName"];
+  return new Slim\Views\PhpRenderer(\$templatePath);
 };
 
 \$container['app'] = function (\$c) {
-  return new $namespace\App();
+  return new $MAIN_NAMESPACE_NAME\App();
 };
 
-// middleware factories
+\$container['db'] = function(\$c) {
+  \$db = new $MAIN_NAMESPACE_NAME\DB();
+  \$db->setupMySql(
+    \$c->settings['DB']['HOST'],
+    \$c->settings['DB']['USER'],
+    \$c->settings['DB']['PASS'],
+    \$c->settings['DB']['DBNAME']
+  );
+  return \$db;
+};
+END_OF_CODE;
 
-\$container['$namespace\Middleware\AppInit'] = function (\$c) {
-  return new $namespace\Middleware\AppInit(\$c->app);
+$middleware_factories = longComment("Middleware factories");
+$middleware_factories .= <<<END_OF_CODE
+\$container['$MAIN_NAMESPACE_NAME\Middleware\AppInit'] = function (\$c) {
+  return new $MAIN_NAMESPACE_NAME\Middleware\AppInit(\$c->app);
 };
 
+\$container['$MAIN_NAMESPACE_NAME\Middleware\Auth'] = function (\$c) {
+  return new $MAIN_NAMESPACE_NAME\Middleware\Auth();
+};
 END_OF_CODE;
 
-$code .= "\r\n" . $controller_factories_code;
-
-mkdir_ifnotexists(__DIR__ . '/src');
-file_put_contents(__DIR__ . '/src/dependencies.php', $code);
-
-
-
-// ============================================================================
-//  App
-// ============================================================================
-
-$namespace = MAIN_NAMESPACE_NAME;
-
-$code = <<<END_OF_CODE
-<?php
-namespace $namespace;
-
-class App {
-  public \$appVersion = '0.0.1dev';
-  public \$templatePath;
-  
-  public function __construct() {
+$controller_factories = longComment("Controller factories");
+foreach ($config as $route_name => $route_config) {
+  $controllerName = ucfirst(strtolower($route_name)) . 'Controller';
+  $deps = '';
+  if (isset($route_config["deps"])) {
+    $deps = implode(', ', array_map(function($dep) {
+      return '$c->' . $dep;
+    }, sToArr($route_config["deps"])));
   }
+    $controller_factories .= <<<END_OF_CODE
+\$container['$MAIN_NAMESPACE_NAME\Controller\\$controllerName'] = function (\$c) {
+  return new $MAIN_NAMESPACE_NAME\Controller\\$controllerName($deps);
+};
+
+
+END_OF_CODE;
 }
 
-END_OF_CODE;
+$model_factories = longComment("Model factories");
 
-mkdir_ifnotexists(__DIR__ . '/src');
-file_put_contents(__DIR__ . '/src/App.php', $code);
+$actions_factories = longComment("Actions factories");
 
-
+$code = $services_code 
+  . $middleware_factories 
+  . $controller_factories
+  . $model_factories
+  . $actions_factories;
+create_file(__DIR__ . '/' . $APP_DIRECTORY, 'dependencies.php', $code);
 
 // ============================================================================
-//  Middleware
+//  middleware.php
+// ============================================================================
+$code = '';
+create_file(__DIR__ . '/' . $APP_DIRECTORY, 'middleware.php', $code);
+
+// ============================================================================
+//  routes.php
+// ============================================================================
+$code = '';
+create_file(__DIR__ . '/' . $APP_DIRECTORY, 'routes.php', $code);
+
+// ============================================================================
+//  settings.php
+// ============================================================================
+$code = '';
+create_file(__DIR__ . '/' . $APP_DIRECTORY, 'settings.php', $code);
+create_file(__DIR__ . '/' . $APP_DIRECTORY, 'settings.sample', $code);
+
+// ============================================================================
+//  controllers
 // ============================================================================
 
-$namespace = MAIN_NAMESPACE_NAME;
+// ============================================================================
+//  middlewares
+// ============================================================================
 
-$code = <<<END_OF_CODE
-<?php
-namespace $namespace\\Middleware;
+// ============================================================================
+//  widgets
+// ============================================================================
 
-class AppInit {
-  private \$app;
-  
-  public function __construct(\$app) {
-    \$this->app = \$app;
-  }
-  
-  public function __invoke(\$request, \$response, \$next) {
-    \$this->app->templatePath = '/' . \$request->getUri()->getBasePath();
-    return \$next(\$request, \$response);
-  }
-}
-END_OF_CODE;
+// ============================================================================
+//  actions
+// ============================================================================
 
-mkdir_ifnotexists(__DIR__ . '/src/Middleware');
-file_put_contents(__DIR__ . '/src/Middleware/AppInit.php', $code);
+// ============================================================================
+//  App.php
+// ============================================================================
+$code = '';
+create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', 'App.php', $code);
 
-
+// ============================================================================
+//  DB.php
+// ============================================================================
+$code = '';
+create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', 'DB.php', $code);
 
 // ============================================================================
 //  templates
 // ============================================================================
 
-$code = <<<END_OF_CODE
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title></title>
-  <link rel="stylesheet" href="<?php echo \$templatePath; ?>css/style.css?v=<?php echo \$appVersion; ?>">
-</head>
-<body>
-  <header>
-  </header>
-END_OF_CODE;
-
-mkdir_ifnotexists(__DIR__ . '/templates/default/partials');
-file_put_contents(__DIR__ . '/templates/default/partials/header.php', $code);
-
-
-
-$code = <<<END_OF_CODE
-  <footer>
-  </footer>
-  <script src="<?php echo \$templatePath; ?>js/script.js?v=<?php echo \$appVersion; ?>"></script>
-</body>
-</html>
-END_OF_CODE;
-
-mkdir_ifnotexists(__DIR__ . '/templates/default/partials');
-file_put_contents(__DIR__ . '/templates/default/partials/footer.php', $code);
-
-
-
 // ============================================================================
-//  generator utility functions
+//  partials: header
 // ============================================================================
 
-function makebaseControllerClass() {
-  // get the class file complete pathname
-  $classFile = __DIR__ . '\\src\\Controller\\BaseController.php';
-  $namespace = MAIN_NAMESPACE_NAME . '\\Controller';
-  
-  // get the code
-$code = <<<END_OF_CODE
-<?php
-namespace $namespace;   
-  
-class BaseController {
-  protected \$view;
-  
-  public function __construct(\$view, \$app) {
-    \$this->view = \$view;
-    \$this->templatePath = \$app->templatePath;
-  }
-}
+// ============================================================================
+//  partials: footer
+// ============================================================================
 
-END_OF_CODE;
+// ============================================================================
+//  css
+// ============================================================================
 
-  file_put_contents($classFile, $code);  
-}
-
-function makeClass($controllerClass, $templateName) {
-  // get the class file complete pathname
-  $classFile = __DIR__ . '\\' . str_replace(MAIN_NAMESPACE_NAME . '\\', 'src\\', $controllerClass) . '.php';
-  
-  // create directory for class file, if not exists
-  $classFile_arr = explode("\\", $classFile);
-  array_pop($classFile_arr);
-  $classFile_dir = implode("\\", $classFile_arr);
-  mkdir_ifnotexists($classFile_dir);
-  
-  // get the namespace name
-  $namespace_arr = explode("\\", $controllerClass);
-  $className = array_pop($namespace_arr);
-  $namespace = implode("\\", $namespace_arr);
-  
-  // get the code
-$code = <<<END_OF_CODE
-<?php
-namespace $namespace;   
-  
-final class $className extends BaseController { 
-  public function __invoke(\$request, \$response, \$args) {
-    return \$this->view->render(\$response, '$templateName.php', [
-      "templatePath" => \$this->templatePath,
-      "appVersion" => ""
-    ]);
-  }
-}
-
-END_OF_CODE;
-
-  file_put_contents($classFile, $code);
-}
-
-function makeTemplate($templatename, $widgets) {
-  // get the class file complete pathname
-  $templateFile = __DIR__ . '/templates/default/' . $templatename . '.php'; 
-  
-  // get the widgets code
-  $widgets_code = '';
-  foreach ($widgets as $widget) {
-    $widgetPath = __DIR__ . "/templates/default/widgets";
-    mkdir_ifnotexists($widgetPath);
-    
-    $widgetUrl = $widgetPath . "/$widget.php";
-    if (!file_exists($widgetUrl))
-      file_put_contents($widgetUrl, "");  
-    
-    $widgets_code .= "<?php require __DIR__ . '/widgets/$widget.php'; ?>\r\n";
-  }
-  
-  // get the code
-$code = <<<END_OF_CODE
-<?php require __DIR__ . '/partials/header.php'; ?>
-
-$widgets_code
-
-<?php require __DIR__ . '/partials/footer.php';
-
-
-END_OF_CODE;
-
-  file_put_contents($templateFile, $code);  
-}
-
-function mkdir_ifnotexists($path) {
-  if (!is_dir($path))
-    mkdir($path, 0777, true);
-}
-
-function my_explode($s) {
-  if ($s == "")
-    return [];
-  return array_map("trim", explode(",", $s));
-}
+// ============================================================================
+//  js
+// ============================================================================
