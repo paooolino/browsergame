@@ -4,6 +4,19 @@ $APP_DIRECTORY = "BGame";
 
 $config = parse_ini_file(__DIR__ . '../generateCode_config.ini', true, INI_SCANNER_RAW);
 
+/*
+. routes (entry point)
+  . each route instantiates a controller
+    . each controller has dependencies
+    . each controller may call one or more models
+      . each model has dependencies
+    . each controller may call one or more actions
+      . each action has dependencies
+  . each route may load a template
+    . each template may call one or more widgets
+    
+*/
+
 // ============================================================================
 //  functions
 // ============================================================================
@@ -129,7 +142,13 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY, 'middleware.php', $code);
 // ============================================================================
 //  routes.php
 // ============================================================================
-$code = '';
+$code = "<?php\r\n";
+foreach ($config as $route_name => $route_config) {
+  $rpath = $route_config["path"];
+  $rClassName = $MAIN_NAMESPACE_NAME . '\\Controller\\' . ucfirst(strtolower($route_name)) . 'Controller';
+  
+  $code .= "\$app->get('$rpath', '$rClassName')->setName('$route_name');\r\n";
+}
 create_file(__DIR__ . '/' . $APP_DIRECTORY, 'routes.php', $code);
 
 // ============================================================================
@@ -142,6 +161,47 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY, 'settings.sample', $code);
 // ============================================================================
 //  controllers
 // ============================================================================
+foreach ($config as $route_name => $route_config) {
+  $filename = ucfirst(strtolower($route_name)) . 'Controller.php';
+  $deps_members = '';
+  $deps_list = '';
+  $deps_assign = '';
+  $invoke_content = '';
+  
+  if (isset($route_config["deps"])) {
+    $deps = array_map("trim", explode(",", $route_config["deps"]));
+    foreach ($deps as $dep) {
+      $deps_members .= "  private \$$dep;\r\n";
+      $deps_assign .= "    \$this->$dep = $dep;\r\n";
+    }
+    $deps_list = implode(", ", $deps);
+  }
+  if (isset($route_config["method"]) && $route_config["method"] == "post") {
+  } else {
+    $templatename = $route_config["template"] . '.php';
+    $invoke_content .= "    return \$this->view->render(\$response, '$templatename', [\r\n";
+    $invoke_content .= "      //\r\n";
+    $invoke_content .= "    ]);";
+  }
+  
+  $code = <<<END_OF_CODE
+<?php
+namespace $MAIN_NAMESPACE_NAME\Controller;
+
+class $filename {
+  
+$deps_members  
+  public function __construct($deps_list) {
+$deps_assign  }
+  
+  public function __invoke(\$request, \$response, \$args) {
+$invoke_content
+  }
+}
+END_OF_CODE;
+  
+  create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src/Controller', $filename, $code);
+}
 
 // ============================================================================
 //  middlewares
