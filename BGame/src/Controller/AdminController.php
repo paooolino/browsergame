@@ -1,12 +1,12 @@
 <?php
 namespace BGame\Controller;
 
-class AdminController.php {
+class AdminController {
   
   private $view;
   
-  public function __construct(view) {
-    $this->view = view;
+  public function __construct($view) {
+    $this->view = $view;
   }
   
   public function __invoke($request, $response, $args) {

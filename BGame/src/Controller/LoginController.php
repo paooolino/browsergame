@@ -1,7 +1,7 @@
 <?php
 namespace BGame\Controller;
 
-class LoginController.php {
+class LoginController {
   
   
   public function __construct() {

@@ -1,7 +1,7 @@
 <?php
 namespace BGame\Controller;
 
-class LogoutController.php {
+class LogoutController {
   
   
   public function __construct() {

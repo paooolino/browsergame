@@ -136,7 +136,11 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY, 'dependencies.php', $code);
 // ============================================================================
 //  middleware.php
 // ============================================================================
-$code = '';
+$code = <<<END_OF_CODE
+<?php
+  \$app->add('$MAIN_NAMESPACE_NAME\Middleware\AppInit');
+  \$app->add('$MAIN_NAMESPACE_NAME\Middleware\Auth');
+END_OF_CODE;
 create_file(__DIR__ . '/' . $APP_DIRECTORY, 'middleware.php', $code);
 
 // ============================================================================
@@ -154,7 +158,28 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY, 'routes.php', $code);
 // ============================================================================
 //  settings.php
 // ============================================================================
-$code = '';
+$code = <<<END_OF_CODE
+<?php
+  return [
+    'settings' => [
+      // Slim settings
+      'displayErrorDetails' => true,
+      'addContentLengthHeader' => false,
+      'determineRouteBeforeAppMiddleware' => true,
+
+      // App settings
+      'templateName' => 'default',
+
+      // Database settings
+      'DB' => [
+        'HOST' => 'localhost',
+        'USER' => 'root',
+        'PASS' => '',
+        'DBNAME' => '',
+      ],
+    ],
+  ];
+END_OF_CODE;
 create_file(__DIR__ . '/' . $APP_DIRECTORY, 'settings.php', $code);
 create_file(__DIR__ . '/' . $APP_DIRECTORY, 'settings.sample', $code);
 
@@ -162,7 +187,8 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY, 'settings.sample', $code);
 //  controllers
 // ============================================================================
 foreach ($config as $route_name => $route_config) {
-  $filename = ucfirst(strtolower($route_name)) . 'Controller.php';
+  $classname = ucfirst(strtolower($route_name)) . 'Controller';
+  $filename = $classname . '.php';
   $deps_members = '';
   $deps_list = '';
   $deps_assign = '';
@@ -172,9 +198,9 @@ foreach ($config as $route_name => $route_config) {
     $deps = array_map("trim", explode(",", $route_config["deps"]));
     foreach ($deps as $dep) {
       $deps_members .= "  private \$$dep;\r\n";
-      $deps_assign .= "    \$this->$dep = $dep;\r\n";
+      $deps_assign .= "    \$this->$dep = \$$dep;\r\n";
     }
-    $deps_list = implode(", ", $deps);
+    $deps_list = implode(", ", array_map(function($d) { return '$' . $d; }, $deps));
   }
   if (isset($route_config["method"]) && $route_config["method"] == "post") {
   } else {
@@ -188,7 +214,7 @@ foreach ($config as $route_name => $route_config) {
 <?php
 namespace $MAIN_NAMESPACE_NAME\Controller;
 
-class $filename {
+class $classname {
   
 $deps_members  
   public function __construct($deps_list) {
@@ -204,8 +230,42 @@ END_OF_CODE;
 }
 
 // ============================================================================
-//  middlewares
+//  middlewares: AppInit
 // ============================================================================
+$code = <<<END_OF_CODE
+<?php
+namespace $MAIN_NAMESPACE_NAME\Middleware;
+
+class AppInit {
+  
+  private \$app;
+  
+  public function __construct(\$app) {
+    \$this->app = \$app;
+  }
+  
+  public function __invoke(\$request, \$response, \$next) {
+    \$this->app->baseUrl = \$request->getUri()->getBaseUrl();
+    return \$next(\$request, \$response);
+  }
+}
+END_OF_CODE;
+create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src/Middleware', 'AppInit.php', $code);
+
+// ============================================================================
+//  middlewares: Auth
+// ============================================================================
+$code = <<<END_OF_CODE
+<?php
+namespace $MAIN_NAMESPACE_NAME\Middleware;
+
+class Auth {
+  public function __invoke(\$request, \$response, \$next) {
+    return \$next(\$request, \$response);
+  }
+}
+END_OF_CODE;
+create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src/Middleware', 'Auth.php', $code);
 
 // ============================================================================
 //  widgets
@@ -218,7 +278,20 @@ END_OF_CODE;
 // ============================================================================
 //  App.php
 // ============================================================================
-$code = '';
+$code = <<<END_OF_CODE
+<?php
+namespace $MAIN_NAMESPACE_NAME;
+
+class App {
+  
+  public \$baseUrl;
+  
+  public function __construct() {
+    //
+  }
+  
+}
+END_OF_CODE;
 create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', 'App.php', $code);
 
 // ============================================================================
@@ -257,7 +330,7 @@ $code = <<<END_OF_CODE
 </head>
 <body>
 END_OF_CODE;
-create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/css', 'style.css', $code);
+create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/partials', 'header.php', $code);
 
 // ============================================================================
 //  partials: footer
@@ -267,7 +340,7 @@ $code = <<<END_OF_CODE
 </body>
 </html>
 END_OF_CODE;
-create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/css', 'style.css', $code);
+create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/partials', 'footer.php', $code);
 
 // ============================================================================
 //  css
