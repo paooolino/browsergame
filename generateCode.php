@@ -230,19 +230,55 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', 'DB.php', $code);
 // ============================================================================
 //  templates
 // ============================================================================
+foreach ($config as $route_name => $route_config) {
+  if (isset($route_config["template"])) {
+    $filename = $route_config["template"] . '.php';
+    $code = <<<END_OF_CODE
+<?php require __DIR__ . '/partials/header.php'; ?>
+
+template: $filename
+
+<?php require __DIR__ . '/partials/footer.php'; ?>
+END_OF_CODE;
+    create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default', $filename, $code);
+  }
+}
 
 // ============================================================================
 //  partials: header
 // ============================================================================
+$code = <<<END_OF_CODE
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title><?php echo \$seo_title; ?></title>
+  <link rel="stylesheet" type="text/css" href="<?php echo \$templatePath; ?>/css/style.css">
+</head>
+<body>
+END_OF_CODE;
+create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/css', 'style.css', $code);
 
 // ============================================================================
 //  partials: footer
 // ============================================================================
+$code = <<<END_OF_CODE
+  <script src="<?php echo \$templatePath; ?>/js/script.js"></script>
+</body>
+</html>
+END_OF_CODE;
+create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/css', 'style.css', $code);
 
 // ============================================================================
 //  css
 // ============================================================================
+$code = <<<END_OF_CODE
+* {margin:0;padding:0;}
+END_OF_CODE;
+create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/css', 'style.css', $code);
 
 // ============================================================================
 //  js
 // ============================================================================
+$code = '';
+create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/js', 'index.js', $code);
