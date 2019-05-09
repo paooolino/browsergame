@@ -206,6 +206,13 @@ foreach ($config as $route_name => $route_config) {
     $deps_list = implode(", ", array_map(function($d) { return '$' . $d; }, $deps));
   }
   if (isset($route_config["method"]) && $route_config["method"] == "post") {
+    // look for actions
+    if (isset($route_config["actions"])) {
+      $actions_arr = array_map("trim", explode(',', $route_config["actions"]));
+      foreach ($actions_arr as $action) {
+        $invoke_content .= "    // invoking action $action \r\n";
+      }      
+    }
   } else {
     $templatename = $route_config["template"] . '.php';
     $invoke_content .= "    return \$this->view->render(\$response, '$templatename', [\r\n";
@@ -295,6 +302,31 @@ END_OF_CODE;
 // ============================================================================
 //  actions
 // ============================================================================
+foreach ($config as $route_name => $route_config) {
+  if (isset($route_config["actions"])) {
+    $actions_arr = array_map("trim", explode(',', $route_config["actions"]));
+    foreach ($actions_arr as $action) {
+      $classname = ucfirst(strtolower($action)) . 'Action';
+      $filename = $classname . '.php';
+      $code = <<<END_OF_CODE
+<?php
+namespace $MAIN_NAMESPACE_NAME\Action;
+
+class $classname {
+  
+  public function __construct() {
+    //
+  }
+  
+  public function __invoke() {
+    //
+  }
+}
+END_OF_CODE;
+      create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src/Action', $filename, $code);
+    }
+  }
+}
 
 // ============================================================================
 //  App.php
