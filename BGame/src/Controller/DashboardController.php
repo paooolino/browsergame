@@ -1,7 +1,7 @@
 <?php
 namespace BGame\Controller;
 
-class LoginController {
+class DashboardController {
   
   private $view;
   private $app;
@@ -12,7 +12,7 @@ class LoginController {
   }
   
   public function __invoke($request, $response, $args) {
-    return $this->view->render($response, 'login.php', [
+    return $this->view->render($response, 'dashboard.php', [
       "templateUrl" => $this->app->templateUrl
     ]);
   }

@@ -74,7 +74,9 @@ $services_code = <<<END_OF_CODE
 
 \$container['view'] = function (\$c) {
   \$templatePath = __DIR__ . '/templates/' . \$c->settings["templateName"];
-  return new Slim\Views\PhpRenderer(\$templatePath);
+  return new Slim\Views\PhpRenderer(\$templatePath, [
+    "router" => \$c->router
+  ]);
 };
 
 \$container['app'] = function (\$c) {
@@ -150,8 +152,9 @@ $code = "<?php\r\n";
 foreach ($config as $route_name => $route_config) {
   $rpath = $route_config["path"];
   $rClassName = $MAIN_NAMESPACE_NAME . '\\Controller\\' . ucfirst(strtolower($route_name)) . 'Controller';
+  $method = (isset($route_config["method"])) ? $route_config["method"] : "get";
   
-  $code .= "\$app->get('$rpath', '$rClassName')->setName('$route_name');\r\n";
+  $code .= "\$app->$method('$rpath', '$rClassName')->setName('$route_name');\r\n";
 }
 create_file(__DIR__ . '/' . $APP_DIRECTORY, 'routes.php', $code);
 
@@ -275,6 +278,19 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src/Middleware', 'Auth.php', $cod
 // ============================================================================
 //  widgets
 // ============================================================================
+foreach ($config as $route_name => $route_config) {
+  if (isset($route_config["widgets"])) {
+    $widgets_arr = array_map("trim", explode(',', $route_config["widgets"]));
+    foreach ($widgets_arr as $widget) {
+      $code = <<<END_OF_CODE
+<!-- $widget -->
+<p>Please edit this widget file in '/templates/default/widgets/$widget.php'</p>
+
+END_OF_CODE;
+      create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/widgets', $widget . '.php', $code, false);
+    }
+  }
+}
 
 // ============================================================================
 //  actions
@@ -313,10 +329,17 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', 'DB.php', $code);
 foreach ($config as $route_name => $route_config) {
   if (isset($route_config["template"])) {
     $filename = $route_config["template"] . '.php';
+    $widgets = '';
+    if (isset($route_config["widgets"])) {
+      $widgets_arr = array_map("trim", explode(',', $route_config["widgets"]));
+      $widgets = implode("\r\n", array_map(function($item) {
+        return '<?php require __DIR__ . \'/widgets/' . $item . '.php\'; ?>';
+      }, $widgets_arr));
+    }
     $code = <<<END_OF_CODE
 <?php require __DIR__ . '/partials/header.php'; ?>
 
-template: $filename
+$widgets
 
 <?php require __DIR__ . '/partials/footer.php'; ?>
 END_OF_CODE;

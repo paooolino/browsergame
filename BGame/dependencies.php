@@ -2,7 +2,9 @@
 
 $container['view'] = function ($c) {
   $templatePath = __DIR__ . '/templates/' . $c->settings["templateName"];
-  return new Slim\Views\PhpRenderer($templatePath);
+  return new Slim\Views\PhpRenderer($templatePath, [
+    "router" => $c->router
+  ]);
 };
 
 $container['app'] = function ($c) {
@@ -37,7 +39,15 @@ $container['BGame\Controller\HomeController'] = function ($c) {
 };
 
 $container['BGame\Controller\LoginController'] = function ($c) {
-  return new BGame\Controller\LoginController();
+  return new BGame\Controller\LoginController($c->view, $c->app);
+};
+
+$container['BGame\Controller\Login_exController'] = function ($c) {
+  return new BGame\Controller\Login_exController();
+};
+
+$container['BGame\Controller\DashboardController'] = function ($c) {
+  return new BGame\Controller\DashboardController($c->view, $c->app);
 };
 
 $container['BGame\Controller\AdminController'] = function ($c) {
