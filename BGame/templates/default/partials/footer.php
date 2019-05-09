@@ -1,3 +1,3 @@
-  <script src="<?php echo $templatePath; ?>/js/script.js"></script>
+  <script src="<?php echo $templateUrl; ?>/js/script.js"></script>
 </body>
 </html>

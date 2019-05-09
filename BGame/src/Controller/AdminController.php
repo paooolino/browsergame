@@ -11,7 +11,7 @@ class AdminController {
   
   public function __invoke($request, $response, $args) {
     return $this->view->render($response, 'admin.php', [
-      //
+      "templateUrl" => $this->app->templateUrl
     ]);
   }
 }

@@ -6,7 +6,7 @@ $container['view'] = function ($c) {
 };
 
 $container['app'] = function ($c) {
-  return new BGame\App();
+  return new BGame\App($c->settings["templateName"]);
 };
 
 $container['db'] = function($c) {

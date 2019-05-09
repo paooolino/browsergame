@@ -13,7 +13,7 @@ class HomeController {
   
   public function __invoke($request, $response, $args) {
     return $this->view->render($response, 'home.php', [
-      //
+      "templateUrl" => $this->app->templateUrl
     ]);
   }
 }

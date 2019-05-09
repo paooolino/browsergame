@@ -78,7 +78,7 @@ $services_code = <<<END_OF_CODE
 };
 
 \$container['app'] = function (\$c) {
-  return new $MAIN_NAMESPACE_NAME\App();
+  return new $MAIN_NAMESPACE_NAME\App(\$c->settings["templateName"]);
 };
 
 \$container['db'] = function(\$c) {
@@ -206,7 +206,7 @@ foreach ($config as $route_name => $route_config) {
   } else {
     $templatename = $route_config["template"] . '.php';
     $invoke_content .= "    return \$this->view->render(\$response, '$templatename', [\r\n";
-    $invoke_content .= "      //\r\n";
+    $invoke_content .= "      \"templateUrl\" => \$this->app->templateUrl\r\n";
     $invoke_content .= "    ]);";
   }
   
@@ -246,6 +246,11 @@ class AppInit {
   
   public function __invoke(\$request, \$response, \$next) {
     \$this->app->baseUrl = \$request->getUri()->getBaseUrl();
+    \$this->app->templateUrl = \$this->app->baseUrl 
+      . '/$APP_DIRECTORY'
+      . '/templates'
+      . '/' . \$this->app->templateName;
+      
     return \$next(\$request, \$response);
   }
 }
@@ -285,9 +290,11 @@ namespace $MAIN_NAMESPACE_NAME;
 class App {
   
   public \$baseUrl;
+  public \$templateName;
+  public \$templateUrl;
   
-  public function __construct() {
-    //
+  public function __construct(\$templateName) {
+    \$this->templateName = \$templateName;
   }
   
 }
@@ -326,7 +333,7 @@ $code = <<<END_OF_CODE
 <head>
   <meta charset="utf-8" />
   <title><?php echo \$seo_title; ?></title>
-  <link rel="stylesheet" type="text/css" href="<?php echo \$templatePath; ?>/css/style.css">
+  <link rel="stylesheet" type="text/css" href="<?php echo \$templateUrl; ?>/css/style.css">
 </head>
 <body>
 END_OF_CODE;
@@ -336,7 +343,7 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/partials', 'hea
 //  partials: footer
 // ============================================================================
 $code = <<<END_OF_CODE
-  <script src="<?php echo \$templatePath; ?>/js/script.js"></script>
+  <script src="<?php echo \$templateUrl; ?>/js/script.js"></script>
 </body>
 </html>
 END_OF_CODE;
