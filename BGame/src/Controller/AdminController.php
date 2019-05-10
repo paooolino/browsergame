@@ -14,4 +14,6 @@ class AdminController {
       "templateUrl" => $this->app->templateUrl
     ]);
   }
+  
+
 }

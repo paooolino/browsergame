@@ -16,4 +16,6 @@ class HomeController {
       "templateUrl" => $this->app->templateUrl
     ]);
   }
+  
+
 }

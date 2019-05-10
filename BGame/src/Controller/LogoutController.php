@@ -8,8 +8,14 @@ class LogoutController {
   }
   
   public function __invoke($request, $response, $args) {
-    $action = ["status" => "success"];
+    $action = $this->doAction();
 
 
   }
+  
+  /* === DO NOT REMOVE THIS COMMENT */
+  private function doAction() {
+    // create your action here.
+  }
+  /* === DO NOT REMOVE THIS COMMENT */
 }

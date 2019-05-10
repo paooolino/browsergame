@@ -227,6 +227,7 @@ foreach ($config as $route_name => $route_config) {
   $deps_list = '';
   $deps_assign = '';
   $invoke_content = '';
+  $action_content = '';
   
   if (isset($route_config["deps"])) {
     $deps = array_map("trim", explode(",", $route_config["deps"]));
@@ -246,7 +247,30 @@ foreach ($config as $route_name => $route_config) {
       }      
     }
     */
-    $invoke_content .= '    $action = ["status" => "success"];' . "\r\n\r\n";
+    $invoke_content .= '    $action = $this->doAction();' . "\r\n\r\n";
+    
+    // action content
+    if (file_exists(__DIR__ . '/' . $APP_DIRECTORY . '/src/Controller/' . $filename)) {
+      $yetcode = file_get_contents(__DIR__ . '/' . $APP_DIRECTORY . '/src/Controller/' . $filename);
+      $matches = [];
+      preg_match("/\/\* === DO NOT REMOVE THIS COMMENT \*\/(.*?)\/* === DO NOT REMOVE THIS COMMENT \*\//s", $yetcode, $matches);
+      if (count($matches) > 0) {
+        $action_content = "  " . $matches[0];
+      }
+    }
+    if ($action_content == "") {
+      $action_content = <<<END_OF_CODE
+  /* === DO NOT REMOVE THIS COMMENT */
+  private function doAction() {
+    // create your action here.
+    die("please create the action by editing the /src/Controller/$filename file");
+    return [
+      "status" => "success"
+    ];
+  }
+  /* === DO NOT REMOVE THIS COMMENT */
+END_OF_CODE;
+    }
     if (isset($route_config["failure"])) {
       $invoke_content .= '    if ($action["status"] == "failure") {' . "\r\n"; 
       $invoke_content .= '      return $response->withRedirect($this->router->pathFor("' . $route_config["failure"] . '"));' . "\r\n"; 
@@ -277,6 +301,8 @@ $deps_assign  }
   public function __invoke(\$request, \$response, \$args) {
 $invoke_content
   }
+  
+$action_content
 }
 END_OF_CODE;
   

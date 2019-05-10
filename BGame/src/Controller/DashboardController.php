@@ -16,4 +16,6 @@ class DashboardController {
       "templateUrl" => $this->app->templateUrl
     ]);
   }
+  
+
 }

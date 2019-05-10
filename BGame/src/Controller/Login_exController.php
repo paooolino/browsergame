@@ -10,7 +10,7 @@ class Login_exController {
   }
   
   public function __invoke($request, $response, $args) {
-    $action = ["status" => "success"];
+    $action = $this->doAction();
 
     if ($action["status"] == "failure") {
       return $response->withRedirect($this->router->pathFor("LOGIN"));
@@ -20,4 +20,14 @@ class Login_exController {
     }
 
   }
+  
+  /* === DO NOT REMOVE THIS COMMENT */
+  private function doAction() {
+    // create your action here.
+    die("please create the action by editing the /src/Controller/Login_exController.php file");
+    return [
+      "status" => "success"
+    ];
+  }
+  /* === DO NOT REMOVE THIS COMMENT */
 }
