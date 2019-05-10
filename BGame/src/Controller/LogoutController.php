@@ -8,6 +8,8 @@ class LogoutController {
   }
   
   public function __invoke($request, $response, $args) {
+    $action = ["status" => "success"];
+
 
   }
 }

@@ -238,11 +238,24 @@ foreach ($config as $route_name => $route_config) {
   }
   if (isset($route_config["method"]) && $route_config["method"] == "post") {
     // look for actions
+    /*
     if (isset($route_config["actions"])) {
       $actions_arr = array_map("trim", explode(',', $route_config["actions"]));
       foreach ($actions_arr as $action) {
         $invoke_content .= "    // invoking action $action \r\n";
       }      
+    }
+    */
+    $invoke_content .= '    $action = ["status" => "success"];' . "\r\n\r\n";
+    if (isset($route_config["failure"])) {
+      $invoke_content .= '    if ($action["status"] == "failure") {' . "\r\n"; 
+      $invoke_content .= '      return $response->withRedirect($this->router->pathFor("' . $route_config["failure"] . '"));' . "\r\n"; 
+      $invoke_content .= '    }' . "\r\n"; 
+    }
+    if (isset($route_config["success"])) {
+      $invoke_content .= '    if ($action["status"] == "success") {' . "\r\n"; 
+      $invoke_content .= '      return $response->withRedirect($this->router->pathFor("' . $route_config["success"] . '"));' . "\r\n"; 
+      $invoke_content .= '    }' . "\r\n"; 
     }
   } else {
     $templatename = $route_config["template"] . '.php';

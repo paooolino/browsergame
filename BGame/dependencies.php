@@ -43,7 +43,7 @@ $container['BGame\Controller\LoginController'] = function ($c) {
 };
 
 $container['BGame\Controller\Login_exController'] = function ($c) {
-  return new BGame\Controller\Login_exController();
+  return new BGame\Controller\Login_exController($c->router);
 };
 
 $container['BGame\Controller\DashboardController'] = function ($c) {
