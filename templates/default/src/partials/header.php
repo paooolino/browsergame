@@ -1,1 +1,0 @@
-Please edit the template source file in /templates/default/src/partials/header.php

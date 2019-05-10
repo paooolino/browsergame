@@ -1,1 +1,5 @@
-Please edit the template source file in /templates/default/src/login.php
+{{header}}
+
+{{loginform}}
+  
+{{footer}}
