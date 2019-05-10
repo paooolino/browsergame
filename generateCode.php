@@ -39,6 +39,37 @@ function sToArr($s) {
   return array_map('trim', explode(', ', $s));
 }
 
+function compile_template($src, $dest, $filename, $mainTemplate=false) {
+  //echo "*** $filename";
+  global $APP_DIRECTORY;
+
+  $tpl = file_get_contents($src . '/' . $filename);
+  
+  $tags = [];
+  preg_match_all("/{{(.*?)}}/", $tpl, $tags);
+  for ($i = 0; $i < count($tags[0]); $i++) {
+    $tagname = $tags[1][$i];
+    
+    $tpl_source_dir = __DIR__ . '/' . $APP_DIRECTORY . '/templates/default/src/partials'; 
+    $tpl_dest_dir = __DIR__ . '/' . $APP_DIRECTORY . '/templates/default/partials'; 
+    $subfilename = $tagname . '.php';
+    if (!file_exists($tpl_source_dir . '/' . $subfilename)) {
+      $code = 'Please edit the template source file in /templates/default/src/partials/' . $subfilename;
+      create_file($tpl_source_dir, $subfilename, $code);
+    }
+    compile_template($tpl_source_dir, $tpl_dest_dir, $subfilename);
+    $tagcode = $mainTemplate 
+      ? "<?php require __DIR__ . '/partials/' . '$subfilename'; ?>"
+      : "<?php require __DIR__ . '/' . '$subfilename'; ?>";
+    $tpl = str_replace("{{".$tagname."}}", $tagcode, $tpl);
+    //echo $tpl;
+  }
+  //echo "****";
+  //echo $tpl;
+  //echo "*** $filename";
+  create_file($dest, $filename, $tpl);
+}
+
 // ============================================================================
 //  bootstrap.php
 // ============================================================================
@@ -358,6 +389,8 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', 'DB.php', $code);
 // ============================================================================
 //  templates
 // ============================================================================
+/*
+// THIS IS THE OLD SOLUTION
 foreach ($config as $route_name => $route_config) {
   if (isset($route_config["template"])) {
     $filename = $route_config["template"] . '.php';
@@ -378,10 +411,25 @@ END_OF_CODE;
     create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default', $filename, $code);
   }
 }
+*/
+foreach ($config as $route_name => $route_config) {
+  if (isset($route_config["template"])) {
+    $tpl_source_dir = __DIR__ . '/' . $APP_DIRECTORY . '/templates/default/src'; 
+    $tpl_dest_dir = __DIR__ . '/' . $APP_DIRECTORY . '/templates/default'; 
+    $filename = $route_config["template"] . '.php';
+    if (!file_exists($tpl_source_dir . '/' . $filename)) {
+      $code = 'Please edit the template source file in /templates/default/src/' . $filename;
+      create_file($tpl_source_dir, $filename, $code);
+    }
+    compile_template($tpl_source_dir, $tpl_dest_dir, $filename, true);
+  }
+}
 
 // ============================================================================
 //  partials: header
 // ============================================================================
+/*
+// THIS IS THE OLD SOLUTION
 $code = <<<END_OF_CODE
 <!doctype html>
 <html>
@@ -393,16 +441,20 @@ $code = <<<END_OF_CODE
 <body>
 END_OF_CODE;
 create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/partials', 'header.php', $code);
+*/
 
 // ============================================================================
 //  partials: footer
 // ============================================================================
+/*
+// THIS IS THE OLD SOLUTION
 $code = <<<END_OF_CODE
   <script src="<?php echo \$templateUrl; ?>/js/script.js"></script>
 </body>
 </html>
 END_OF_CODE;
 create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/partials', 'footer.php', $code);
+*/
 
 // ============================================================================
 //  css

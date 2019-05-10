@@ -4,5 +4,5 @@
 </head>
 <body>
   <header>
-    <?php require __DIR__ . '/' . 'topnav.php'; ?>
+    {{topnav}}
   </header>

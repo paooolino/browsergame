@@ -1,0 +1,5 @@
+{{header}}
+
+Home content.
+
+{{footer}}
