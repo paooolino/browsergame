@@ -15,6 +15,8 @@ class Login_exController {
   public function __invoke($request, $response, $args) {
     $this->get = $request->getQueryParams();
     $this->post = $request->getParsedBody();
+    
+
     $action = $this->doAction();
 
     if ($action["status"] == "failure") {

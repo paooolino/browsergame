@@ -11,6 +11,8 @@ class LogoutController {
   public function __invoke($request, $response, $args) {
     $this->get = $request->getQueryParams();
     $this->post = $request->getParsedBody();
+    
+
     $action = $this->doAction();
 
 

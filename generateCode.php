@@ -70,7 +70,7 @@ function compile_template($src, $dest, $filename, $mainTemplate=false) {
   create_file($dest, $filename, $tpl);
 }
 
-function custom_content($file, $defaul_custom_content) {
+function custom_content($file, $default_custom_content) {
   $custom_content = '';
   if (file_exists($file)) {
     $yetcode = file_get_contents($file);
@@ -242,6 +242,7 @@ foreach ($config as $route_name => $route_config) {
   $deps_members = '';
   $deps_list = '';
   $deps_assign = '';
+  $models_content = '';
   $action_content = '';
   $invoke_content = '';
   
@@ -253,16 +254,17 @@ foreach ($config as $route_name => $route_config) {
     }
     $deps_list = implode(", ", array_map(function($d) { return '$' . $d; }, $deps));
   }
+  
+  if (isset($route_config["models"])) {
+    $models = array_map("trim", explode(",", $route_config["models"]));
+    foreach ($models as $model) {
+      $modelClassName = ucfirst(strtolower($model)) . 'Model';
+      $models_content .= "    new \\$MAIN_NAMESPACE_NAME\Model\\$modelClassName()->get();\r\n";
+    }
+  }
+  
   if (isset($route_config["method"]) && $route_config["method"] == "post") {
     // look for actions
-    /*
-    if (isset($route_config["actions"])) {
-      $actions_arr = array_map("trim", explode(',', $route_config["actions"]));
-      foreach ($actions_arr as $action) {
-        $invoke_content .= "    // invoking action $action \r\n";
-      }      
-    }
-    */
     $invoke_content .= '    $action = $this->doAction();' . "\r\n\r\n";
     
     $action_content = custom_content(
@@ -311,6 +313,8 @@ $deps_assign  }
   public function __invoke(\$request, \$response, \$args) {
     \$this->get = \$request->getQueryParams();
     \$this->post = \$request->getParsedBody();
+    
+$models_content
 $invoke_content
   }
   
@@ -384,6 +388,46 @@ foreach ($config as $route_name => $route_config) {
 
 END_OF_CODE;
       create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/widgets', $widget . '.php', $code, false);
+    }
+  }
+}
+
+// ============================================================================
+//  models
+// ============================================================================
+foreach ($config as $route_name => $route_config) {
+  if (isset($route_config["models"])) {
+    $models_arr = array_map("trim", explode(',', $route_config["models"]));
+    foreach ($models_arr as $model) {
+      $classname = ucfirst(strtolower($model)) . 'Model';
+      $filename = $classname . '.php';
+      $custom_content = custom_content(
+        __DIR__ . '/' . $APP_DIRECTORY . '/src/Model/' . $filename,
+        <<<END_OF_CODE
+    /* === DO NOT REMOVE THIS COMMENT */
+
+    // retrieve and return requested data here
+
+    /* === DO NOT REMOVE THIS COMMENT */
+END_OF_CODE
+      );
+
+      $code = <<<END_OF_CODE
+<?php
+namespace $MAIN_NAMESPACE_NAME\Model;
+
+class $classname {
+  
+  public function __construct() {
+    //
+  }
+  
+  public function get() {
+$custom_content
+  }
+}
+END_OF_CODE;
+      create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src/Model', $filename, $code);
     }
   }
 }
