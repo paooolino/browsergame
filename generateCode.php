@@ -293,12 +293,13 @@ END_OF_CODE;
 namespace $MAIN_NAMESPACE_NAME\Controller;
 
 class $classname {
-  
+  private \$get;
 $deps_members  
   public function __construct($deps_list) {
 $deps_assign  }
   
   public function __invoke(\$request, \$response, \$args) {
+    \$this->get = \$request->getQueryParams();
 $invoke_content
   }
   
@@ -401,20 +402,40 @@ END_OF_CODE;
 // ============================================================================
 //  App.php
 // ============================================================================
+$custom_content = '';
+if (file_exists(__DIR__ . '/' . $APP_DIRECTORY . '/src/App.php')) {
+  $yetcode = file_get_contents(__DIR__ . '/' . $APP_DIRECTORY . '/src/App.php');
+  $matches = [];
+  preg_match("/\/\* === DO NOT REMOVE THIS COMMENT \*\/(.*?)\/* === DO NOT REMOVE THIS COMMENT \*\//s", $yetcode, $matches);
+  if (count($matches) > 0) {
+    $custom_content = "  " . $matches[0];
+  }
+}
+if ($custom_content == "") {    
+  $custom_content = <<<END_OF_CODE
+  /* === DO NOT REMOVE THIS COMMENT */
+  
+  // add your public functions here
+  
+  /* === DO NOT REMOVE THIS COMMENT */
+END_OF_CODE;
+}
+
 $code = <<<END_OF_CODE
 <?php
 namespace $MAIN_NAMESPACE_NAME;
 
 class App {
   
-  public \$baseUrl;
   public \$templateName;
-  public \$templateUrl;
+  public \$templateUrl; /* will be initiated by AppInit middleware */
+  public \$baseUrl;     /* will be initiated by AppInit middleware */
   
   public function __construct(\$templateName) {
     \$this->templateName = \$templateName;
   }
   
+$custom_content
 }
 END_OF_CODE;
 create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', 'App.php', $code);
