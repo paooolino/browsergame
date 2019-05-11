@@ -3,6 +3,7 @@ namespace BGame\Controller;
 
 class HomeController {
   private $get;
+  private $post;
   private $view;
   private $app;
   
@@ -13,6 +14,7 @@ class HomeController {
   
   public function __invoke($request, $response, $args) {
     $this->get = $request->getQueryParams();
+    $this->post = $request->getParsedBody();
     return $this->view->render($response, 'home.php', [
       "templateUrl" => $this->app->templateUrl
     ]);

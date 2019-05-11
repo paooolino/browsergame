@@ -3,6 +3,7 @@ namespace BGame\Controller;
 
 class Login_exController {
   private $get;
+  private $post;
   private $router;
   private $app;
   
@@ -13,6 +14,7 @@ class Login_exController {
   
   public function __invoke($request, $response, $args) {
     $this->get = $request->getQueryParams();
+    $this->post = $request->getParsedBody();
     $action = $this->doAction();
 
     if ($action["status"] == "failure") {
@@ -27,16 +29,16 @@ class Login_exController {
   /* === DO NOT REMOVE THIS COMMENT */
   private function doAction() {
     // create your action here.
-    $username = $this->get["username"];
-    $password = $this->get["password"];
+    $username = $this->post["username"];
+    $password = $this->post["password"];
     if ($this->app->userExists($username, $password)) {
-      $this->app->setAuthCookie();
+      $this->app->setAuthCookie($username, $password);
       return [
-        "status" => "failure"
+        "status" => "success"
       ];
     } else {
       return [
-        "status" => "success"
+        "status" => "failure"
       ];      
     }
   }

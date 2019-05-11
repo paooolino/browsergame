@@ -29,7 +29,7 @@ $container['BGame\Middleware\AppInit'] = function ($c) {
 };
 
 $container['BGame\Middleware\Auth'] = function ($c) {
-  return new BGame\Middleware\Auth();
+  return new BGame\Middleware\Auth($c->app);
 };
 // -----------------------------------------------------------------------------
 // Controller factories

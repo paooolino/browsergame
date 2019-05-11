@@ -70,6 +70,22 @@ function compile_template($src, $dest, $filename, $mainTemplate=false) {
   create_file($dest, $filename, $tpl);
 }
 
+function custom_content($file, $defaul_custom_content) {
+  $custom_content = '';
+  if (file_exists($file)) {
+    $yetcode = file_get_contents($file);
+    $matches = [];
+    preg_match("/\/\* === DO NOT REMOVE THIS COMMENT \*\/(.*?)\/* === DO NOT REMOVE THIS COMMENT \*\//s", $yetcode, $matches);
+    if (count($matches) > 0) {
+      $custom_content = "  " . $matches[0];
+    }
+  }
+  if ($custom_content == "") { 
+    $custom_content = $default_custom_content;
+  }
+  return $custom_content;
+}
+
 // ============================================================================
 //  bootstrap.php
 // ============================================================================
@@ -133,7 +149,7 @@ $middleware_factories .= <<<END_OF_CODE
 };
 
 \$container['$MAIN_NAMESPACE_NAME\Middleware\Auth'] = function (\$c) {
-  return new $MAIN_NAMESPACE_NAME\Middleware\Auth();
+  return new $MAIN_NAMESPACE_NAME\Middleware\Auth(\$c->app);
 };
 END_OF_CODE;
 
@@ -226,8 +242,8 @@ foreach ($config as $route_name => $route_config) {
   $deps_members = '';
   $deps_list = '';
   $deps_assign = '';
-  $invoke_content = '';
   $action_content = '';
+  $invoke_content = '';
   
   if (isset($route_config["deps"])) {
     $deps = array_map("trim", explode(",", $route_config["deps"]));
@@ -249,17 +265,9 @@ foreach ($config as $route_name => $route_config) {
     */
     $invoke_content .= '    $action = $this->doAction();' . "\r\n\r\n";
     
-    // action content
-    if (file_exists(__DIR__ . '/' . $APP_DIRECTORY . '/src/Controller/' . $filename)) {
-      $yetcode = file_get_contents(__DIR__ . '/' . $APP_DIRECTORY . '/src/Controller/' . $filename);
-      $matches = [];
-      preg_match("/\/\* === DO NOT REMOVE THIS COMMENT \*\/(.*?)\/* === DO NOT REMOVE THIS COMMENT \*\//s", $yetcode, $matches);
-      if (count($matches) > 0) {
-        $action_content = "  " . $matches[0];
-      }
-    }
-    if ($action_content == "") {
-      $action_content = <<<END_OF_CODE
+    $action_content = custom_content(
+      __DIR__ . '/' . $APP_DIRECTORY . '/src/Controller/' . $filename,
+      <<<END_OF_CODE
   /* === DO NOT REMOVE THIS COMMENT */
   private function doAction() {
     // create your action here.
@@ -269,8 +277,9 @@ foreach ($config as $route_name => $route_config) {
     ];
   }
   /* === DO NOT REMOVE THIS COMMENT */
-END_OF_CODE;
-    }
+END_OF_CODE
+    );
+    
     if (isset($route_config["failure"])) {
       $invoke_content .= '    if ($action["status"] == "failure") {' . "\r\n"; 
       $invoke_content .= '      return $response->withRedirect($this->router->pathFor("' . $route_config["failure"] . '"));' . "\r\n"; 
@@ -294,12 +303,14 @@ namespace $MAIN_NAMESPACE_NAME\Controller;
 
 class $classname {
   private \$get;
+  private \$post;
 $deps_members  
   public function __construct($deps_list) {
 $deps_assign  }
   
   public function __invoke(\$request, \$response, \$args) {
     \$this->get = \$request->getQueryParams();
+    \$this->post = \$request->getParsedBody();
 $invoke_content
   }
   
@@ -346,6 +357,13 @@ $code = <<<END_OF_CODE
 namespace $MAIN_NAMESPACE_NAME\Middleware;
 
 class Auth {
+  
+  private \$app;
+  
+  public function __construct(\$app) {
+    \$this->app = \$app;
+  }
+  
   public function __invoke(\$request, \$response, \$next) {
     return \$next(\$request, \$response);
   }
@@ -402,24 +420,16 @@ END_OF_CODE;
 // ============================================================================
 //  App.php
 // ============================================================================
-$custom_content = '';
-if (file_exists(__DIR__ . '/' . $APP_DIRECTORY . '/src/App.php')) {
-  $yetcode = file_get_contents(__DIR__ . '/' . $APP_DIRECTORY . '/src/App.php');
-  $matches = [];
-  preg_match("/\/\* === DO NOT REMOVE THIS COMMENT \*\/(.*?)\/* === DO NOT REMOVE THIS COMMENT \*\//s", $yetcode, $matches);
-  if (count($matches) > 0) {
-    $custom_content = "  " . $matches[0];
-  }
-}
-if ($custom_content == "") {    
-  $custom_content = <<<END_OF_CODE
+$custom_content = custom_content(
+  __DIR__ . '/' . $APP_DIRECTORY . '/src/App.php',
+  <<<END_OF_CODE
   /* === DO NOT REMOVE THIS COMMENT */
   
   // add your public functions here
   
   /* === DO NOT REMOVE THIS COMMENT */
-END_OF_CODE;
-}
+END_OF_CODE
+);
 
 $code = <<<END_OF_CODE
 <?php
@@ -443,7 +453,34 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', 'App.php', $code);
 // ============================================================================
 //  DB.php
 // ============================================================================
-$code = '';
+$code = <<<END_OF_CODE
+<?php
+namespace $MAIN_NAMESPACE_NAME;
+
+class DB {
+  
+  private \$conn;
+  
+  public function __construct() {
+    //
+  }
+  
+  public function setupMysql(\$host, \$user, \$pass, \$dbname) {
+    try {
+      \$this->_conn = new PDO(
+        'mysql:host=' . \$db_host . ';dbname=' . \$db_name, 
+        \$db_user, 
+        \$db_pass,
+        array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
+      );
+      return \$this->_conn;
+    } catch (PDOException \$e) {
+      die("db connection error");
+    }
+  }
+  
+}
+END_OF_CODE;
 create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', 'DB.php', $code);
 
 // ============================================================================

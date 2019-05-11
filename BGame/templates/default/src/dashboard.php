@@ -1,1 +1,5 @@
-Please edit the template source file in /templates/default/src/dashboard.php
+{{header}}
+
+dashboard content.
+
+{{footer}}
