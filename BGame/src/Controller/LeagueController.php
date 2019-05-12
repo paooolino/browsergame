@@ -1,7 +1,7 @@
 <?php
 namespace BGame\Controller;
 
-class HomeController {
+class LeagueController {
   private $get;
   private $post;
   private $view;
@@ -18,10 +18,13 @@ class HomeController {
     
     $LeagueslistModel = new \BGame\Model\LeagueslistModel();
     $leagueslist = $LeagueslistModel->get();
+    $LeagueinfosModel = new \BGame\Model\LeagueinfosModel();
+    $leagueinfos = $LeagueinfosModel->get();
 
-    return $this->view->render($response, 'home.php', [
+    return $this->view->render($response, 'league.php', [
       "templateUrl" => $this->app->templateUrl,
       "leagueslist" => $leagueslist,
+      "leagueinfos" => $leagueinfos,
     ]);
   }
   

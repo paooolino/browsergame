@@ -58,6 +58,10 @@ $container['BGame\Controller\LogoutController'] = function ($c) {
   return new BGame\Controller\LogoutController();
 };
 
+$container['BGame\Controller\LeagueController'] = function ($c) {
+  return new BGame\Controller\LeagueController($c->view, $c->app);
+};
+
 
 // -----------------------------------------------------------------------------
 // Model factories

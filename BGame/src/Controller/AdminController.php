@@ -16,7 +16,7 @@ class AdminController {
     
 
     return $this->view->render($response, 'admin.php', [
-      "templateUrl" => $this->app->templateUrl
+      "templateUrl" => $this->app->templateUrl,
     ]);
   }
   

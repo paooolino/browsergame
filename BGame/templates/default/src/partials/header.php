@@ -5,4 +5,5 @@
 <body>
   <header>
     {{topnav}}
+    {{publicnav}}
   </header>

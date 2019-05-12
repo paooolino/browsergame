@@ -18,7 +18,7 @@ class DashboardController {
     
 
     return $this->view->render($response, 'dashboard.php', [
-      "templateUrl" => $this->app->templateUrl
+      "templateUrl" => $this->app->templateUrl,
     ]);
   }
   

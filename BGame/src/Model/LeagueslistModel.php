@@ -7,11 +7,26 @@ class LeagueslistModel {
     //
   }
   
-  public function get() {
   /* === DO NOT REMOVE THIS COMMENT */
-
-// retrieve and return requested data here
-
-/* === DO NOT REMOVE THIS COMMENT */
-  }
+  public function get() {
+    return [
+      [
+        "name" => "Serie A",
+        "url" => "serie-a"
+      ],
+      [
+        "name" => "Serie B",
+        "url" => "serie-b"
+      ],
+      [
+        "name" => "Lega Pro",
+        "url" => "lega-pro"
+      ],
+      [
+        "name" => "Campionato Nazionale Dilettanti",
+        "url" => "cnd"
+      ]
+    ];
+  }  
+  /* === DO NOT REMOVE THIS COMMENT */
 }

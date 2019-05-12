@@ -16,9 +16,12 @@ class LoginController {
     $this->get = $request->getQueryParams();
     $this->post = $request->getParsedBody();
     
+    $LeagueslistModel = new \BGame\Model\LeagueslistModel();
+    $leagueslist = $LeagueslistModel->get();
 
     return $this->view->render($response, 'login.php', [
-      "templateUrl" => $this->app->templateUrl
+      "templateUrl" => $this->app->templateUrl,
+      "leagueslist" => $leagueslist,
     ]);
   }
   

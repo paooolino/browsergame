@@ -172,6 +172,21 @@ END_OF_CODE;
 }
 
 $model_factories = longComment("Model factories");
+/*
+foreach ($config as $route_name => $route_config) {
+  if (isset($route_config["models"])) {
+    $models_arr = array_map("trim", explode(',', $route_config["models"]));
+    foreach ($models_arr as $model) {
+      $modelName = ucfirst(strtolower($model)) . 'Model';
+      $model_factories .= <<<END_OF_CODE
+\$container['$MAIN_NAMESPACE_NAME\Model\\$modelName'] = function (\$c) {
+  return new $MAIN_NAMESPACE_NAME\Model\\$modelName();
+};
+END_OF_CODE;
+    }
+  }
+}
+*/
 
 $actions_factories = longComment("Actions factories");
 
@@ -245,6 +260,7 @@ foreach ($config as $route_name => $route_config) {
   $models_content = '';
   $action_content = '';
   $invoke_content = '';
+  $models_vars = '';
   
   if (isset($route_config["deps"])) {
     $deps = array_map("trim", explode(",", $route_config["deps"]));
@@ -259,7 +275,9 @@ foreach ($config as $route_name => $route_config) {
     $models = array_map("trim", explode(",", $route_config["models"]));
     foreach ($models as $model) {
       $modelClassName = ucfirst(strtolower($model)) . 'Model';
-      $models_content .= "    new \\$MAIN_NAMESPACE_NAME\Model\\$modelClassName()->get();\r\n";
+      $models_content .= "    \$$modelClassName = new \\$MAIN_NAMESPACE_NAME\Model\\$modelClassName();\r\n";
+      $models_content .= "    \$$model = \$$modelClassName" . "->get();\r\n";
+      $models_vars .= "      \"$model\" => \$$model,\r\n";
     }
   }
   
@@ -295,7 +313,8 @@ END_OF_CODE
   } else {
     $templatename = $route_config["template"] . '.php';
     $invoke_content .= "    return \$this->view->render(\$response, '$templatename', [\r\n";
-    $invoke_content .= "      \"templateUrl\" => \$this->app->templateUrl\r\n";
+    $invoke_content .= "      \"templateUrl\" => \$this->app->templateUrl,\r\n";
+    $invoke_content .= $models_vars;
     $invoke_content .= "    ]);";
   }
   
@@ -404,11 +423,11 @@ foreach ($config as $route_name => $route_config) {
       $custom_content = custom_content(
         __DIR__ . '/' . $APP_DIRECTORY . '/src/Model/' . $filename,
         <<<END_OF_CODE
-    /* === DO NOT REMOVE THIS COMMENT */
-
+  /* === DO NOT REMOVE THIS COMMENT */
+  public function get() {
     // retrieve and return requested data here
-
-    /* === DO NOT REMOVE THIS COMMENT */
+  }  
+  /* === DO NOT REMOVE THIS COMMENT */
 END_OF_CODE
       );
 
@@ -422,9 +441,7 @@ class $classname {
     //
   }
   
-  public function get() {
 $custom_content
-  }
 }
 END_OF_CODE;
       create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src/Model', $filename, $code);
