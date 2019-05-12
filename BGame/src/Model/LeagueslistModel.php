@@ -3,8 +3,13 @@ namespace BGame\Model;
 
 class LeagueslistModel {
   
-  public function __construct() {
-    //
+  private $view;
+  private $app;
+
+  
+  public function __construct($view, $app) {
+    $this->view = $view;
+    $this->app = $app;
   }
   
   /* === DO NOT REMOVE THIS COMMENT */

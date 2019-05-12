@@ -16,15 +16,17 @@ class LeagueController {
     $this->get = $request->getQueryParams();
     $this->post = $request->getParsedBody();
     
-    $LeagueslistModel = new \BGame\Model\LeagueslistModel();
-    $leagueslist = $LeagueslistModel->get();
-    $LeagueinfosModel = new \BGame\Model\LeagueinfosModel();
-    $leagueinfos = $LeagueinfosModel->get();
+    $LeagueslistModel = new \BGame\Model\LeagueslistModel($this->view, $this->app);
+    $leagueslist = $LeagueslistModel->get($args);
+
+    $Leagueinfos(url)Model = new \BGame\Model\Leagueinfos(url)Model($this->view, $this->app);
+    $leagueinfos(url) = $Leagueinfos(url)Model->get($args);
+
 
     return $this->view->render($response, 'league.php', [
       "templateUrl" => $this->app->templateUrl,
       "leagueslist" => $leagueslist,
-      "leagueinfos" => $leagueinfos,
+      "leagueinfos(url)" => $leagueinfos(url),
     ]);
   }
   

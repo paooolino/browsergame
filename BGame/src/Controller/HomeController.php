@@ -16,8 +16,9 @@ class HomeController {
     $this->get = $request->getQueryParams();
     $this->post = $request->getParsedBody();
     
-    $LeagueslistModel = new \BGame\Model\LeagueslistModel();
-    $leagueslist = $LeagueslistModel->get();
+    $LeagueslistModel = new \BGame\Model\LeagueslistModel($this->view, $this->app);
+    $leagueslist = $LeagueslistModel->get($args);
+
 
     return $this->view->render($response, 'home.php', [
       "templateUrl" => $this->app->templateUrl,

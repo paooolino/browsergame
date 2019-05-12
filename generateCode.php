@@ -256,6 +256,7 @@ foreach ($config as $route_name => $route_config) {
   $filename = $classname . '.php';
   $deps_members = '';
   $deps_list = '';
+  $deps_list_topass = '';
   $deps_assign = '';
   $models_content = '';
   $action_content = '';
@@ -269,14 +270,15 @@ foreach ($config as $route_name => $route_config) {
       $deps_assign .= "    \$this->$dep = \$$dep;\r\n";
     }
     $deps_list = implode(", ", array_map(function($d) { return '$' . $d; }, $deps));
+    $deps_list_topass = implode(", ", array_map(function($d) { return '$this->' . $d; }, $deps));
   }
   
   if (isset($route_config["models"])) {
     $models = array_map("trim", explode(",", $route_config["models"]));
     foreach ($models as $model) {
       $modelClassName = ucfirst(strtolower($model)) . 'Model';
-      $models_content .= "    \$$modelClassName = new \\$MAIN_NAMESPACE_NAME\Model\\$modelClassName();\r\n";
-      $models_content .= "    \$$model = \$$modelClassName" . "->get();\r\n";
+      $models_content .= "    \$$modelClassName = new \\$MAIN_NAMESPACE_NAME\Model\\$modelClassName($deps_list_topass);\r\n";
+      $models_content .= "    \$$model = \$$modelClassName" . "->get(\$args);\r\n\r\n";
       $models_vars .= "      \"$model\" => \$$model,\r\n";
     }
   }
@@ -418,13 +420,31 @@ foreach ($config as $route_name => $route_config) {
   if (isset($route_config["models"])) {
     $models_arr = array_map("trim", explode(',', $route_config["models"]));
     foreach ($models_arr as $model) {
+      $model_parts = explode("(", $model);
+      if (count($model_parts) > 1) {
+        $model = $model_parts[0];
+        $model_params = str_replace(")", "", $model_parts[1]);
+      }
       $classname = ucfirst(strtolower($model)) . 'Model';
       $filename = $classname . '.php';
+      
+      $deps_list = '';
+      $deps_members = '';
+      $deps_assign = '';
+      if (isset($route_config["deps"])) {
+        $deps = array_map("trim", explode(",", $route_config["deps"]));
+        foreach ($deps as $dep) {
+          $deps_members .= "  private \$$dep;\r\n";
+          $deps_assign .= "    \$this->$dep = \$$dep;\r\n";
+        }
+        $deps_list = implode(", ", array_map(function($d) { return '$' . $d; }, $deps));
+      }
+      
       $custom_content = custom_content(
         __DIR__ . '/' . $APP_DIRECTORY . '/src/Model/' . $filename,
         <<<END_OF_CODE
   /* === DO NOT REMOVE THIS COMMENT */
-  public function get() {
+  public function get(\$args) {
     // retrieve and return requested data here
   }  
   /* === DO NOT REMOVE THIS COMMENT */
@@ -437,9 +457,10 @@ namespace $MAIN_NAMESPACE_NAME\Model;
 
 class $classname {
   
-  public function __construct() {
-    //
-  }
+$deps_members
+  
+  public function __construct($deps_list) {
+$deps_assign  }
   
 $custom_content
 }
@@ -528,14 +549,14 @@ class DB {
   
   public function setupMysql(\$host, \$user, \$pass, \$dbname) {
     try {
-      \$this->_conn = new PDO(
-        'mysql:host=' . \$db_host . ';dbname=' . \$db_name, 
-        \$db_user, 
-        \$db_pass,
-        array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
+      \$this->_conn = new \PDO(
+        'mysql:host=' . \$host . ';dbname=' . \$dbname, 
+        \$user, 
+        \$pass,
+        array(\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
       );
       return \$this->_conn;
-    } catch (PDOException \$e) {
+    } catch (\PDOException \$e) {
       die("db connection error");
     }
   }
