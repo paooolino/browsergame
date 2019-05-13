@@ -19,12 +19,12 @@
     <tr>
       <td><?php echo $row["team"]; ?></td> 
       <td><?php echo $row["points"]; ?></td> 
-      <td><?php echo $row["played"]; ?></td> 
+      <?php if(false) { ?><td><?php echo $row["played"]; ?></td> 
       <td><?php echo $row["wins"]; ?></td> 
       <td><?php echo $row["draws"]; ?></td> 
       <td><?php echo $row["loss"]; ?></td> 
       <td><?php echo $row["goals_scored"]; ?></td> 
-      <td><?php echo $row["goals_taken"]; ?></td> 
+      <td><?php echo $row["goals_taken"]; ?></td> <?php } ?>
     </tr>  
     <?php } ?>
   </tbody>

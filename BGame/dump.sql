@@ -3,7 +3,7 @@
 -- Host: localhost	Database: bgame
 -- ------------------------------------------------------
 -- Server version 	5.7.19
--- Date: Mon, 13 May 2019 15:28:36 +0000
+-- Date: Mon, 13 May 2019 15:51:28 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -45,6 +45,64 @@ COMMIT;
 -- Dumped table `leagues` with 4 row(s)
 --
 
+--
+-- Table structure for table `standings`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `standings` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_league` int(10) unsigned NOT NULL DEFAULT '0',
+  `id_team` int(10) unsigned DEFAULT NULL,
+  `points` int(10) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `standings`
+--
+
+LOCK TABLES `standings` WRITE;
+/*!40000 ALTER TABLE `standings` DISABLE KEYS */;
+SET autocommit=0;
+INSERT INTO `standings` VALUES (1,1,1,0),(2,1,2,0),(3,1,3,0),(4,1,4,0),(5,2,5,0),(6,2,6,0),(7,2,7,0),(8,2,8,0);
+/*!40000 ALTER TABLE `standings` ENABLE KEYS */;
+UNLOCK TABLES;
+COMMIT;
+
+-- Dumped table `standings` with 8 row(s)
+--
+
+--
+-- Table structure for table `teams`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `teams` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `teams`
+--
+
+LOCK TABLES `teams` WRITE;
+/*!40000 ALTER TABLE `teams` DISABLE KEYS */;
+SET autocommit=0;
+INSERT INTO `teams` VALUES (1,'Juventus'),(2,'Milan'),(3,'Inter'),(4,'Napoli'),(5,'Roma'),(6,'Lazio'),(7,'Fiorentina'),(8,'Parma'),(9,'Torino'),(10,'Atalanta'),(11,'Udinese'),(12,'Bologna'),(13,'Genoa'),(14,'Sampdoria'),(15,'Empoli'),(16,'Chievo'),(17,'Hellas Verona'),(18,'Brescia'),(19,'Sassuolo');
+/*!40000 ALTER TABLE `teams` ENABLE KEYS */;
+UNLOCK TABLES;
+COMMIT;
+
+-- Dumped table `teams` with 19 row(s)
+--
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
@@ -54,4 +112,4 @@ COMMIT;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Mon, 13 May 2019 15:28:36 +0000
+-- Dump completed on: Mon, 13 May 2019 15:51:28 +0000
