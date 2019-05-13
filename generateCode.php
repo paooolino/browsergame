@@ -1,8 +1,16 @@
 <?php
+require __DIR__ . '/vendor/autoload.php';
+use Ifsnop\Mysqldump as IMysqldump;
+
 $MAIN_NAMESPACE_NAME = "BGame";
 $APP_DIRECTORY = "BGame";
 
-$config = parse_ini_file(__DIR__ . '../generateCode_config.ini', true, INI_SCANNER_RAW);
+$config_all = parse_ini_file(__DIR__ . '../generateCode_config.ini', true, INI_SCANNER_RAW);
+$models_pos = array_search('::MODELS::', array_keys($config_all));
+// configurazione controllers
+$config = array_slice($config_all, 0, $models_pos);
+// configurazione models
+$config_models = array_slice($config_all, $models_pos+1);
 
 /*
 . routes (entry point)
@@ -156,12 +164,22 @@ END_OF_CODE;
 $controller_factories = longComment("Controller factories");
 foreach ($config as $route_name => $route_config) {
   $controllerName = ucfirst(strtolower($route_name)) . 'Controller';
-  $deps = '';
+  $deps = [];
   if (isset($route_config["deps"])) {
-    $deps = implode(', ', array_map(function($dep) {
+    $deps = array_map(function($dep) {
       return '$c->' . $dep;
-    }, sToArr($route_config["deps"])));
+    }, sToArr($route_config["deps"]));
   }
+  
+  if (isset($route_config["models"])) {
+    // models are dependencies themselves
+    $deps = array_merge($deps, array_map(function($model) {
+      return '$c->' . ucfirst(trim($model)) . "Model";
+    }, explode(",", $route_config["models"])));
+  }
+
+  $deps = implode(", ", $deps);
+  
     $controller_factories .= <<<END_OF_CODE
 \$container['$MAIN_NAMESPACE_NAME\Controller\\$controllerName'] = function (\$c) {
   return new $MAIN_NAMESPACE_NAME\Controller\\$controllerName($deps);
@@ -172,21 +190,24 @@ END_OF_CODE;
 }
 
 $model_factories = longComment("Model factories");
-/*
-foreach ($config as $route_name => $route_config) {
-  if (isset($route_config["models"])) {
-    $models_arr = array_map("trim", explode(',', $route_config["models"]));
-    foreach ($models_arr as $model) {
-      $modelName = ucfirst(strtolower($model)) . 'Model';
-      $model_factories .= <<<END_OF_CODE
-\$container['$MAIN_NAMESPACE_NAME\Model\\$modelName'] = function (\$c) {
-  return new $MAIN_NAMESPACE_NAME\Model\\$modelName();
-};
-END_OF_CODE;
-    }
+
+foreach ($config_models as $model_name => $model_config) {
+  $modelName = ucfirst(strtolower($model_name)) . 'Model';
+  $deps = '';
+  if (isset($model_config["deps"])) {
+    $deps = implode(', ', array_map(function($dep) {
+      return '$c->' . $dep;
+    }, sToArr($model_config["deps"])));
   }
+  $model_factories .= <<<END_OF_CODE
+\$container['$modelName'] = function (\$c) {
+  return new $MAIN_NAMESPACE_NAME\Model\\$modelName($deps);
+};
+
+
+END_OF_CODE;
 }
-*/
+
 
 $actions_factories = longComment("Actions factories");
 
@@ -245,7 +266,7 @@ $code = <<<END_OF_CODE
     ],
   ];
 END_OF_CODE;
-create_file(__DIR__ . '/' . $APP_DIRECTORY, 'settings.php', $code);
+create_file(__DIR__ . '/' . $APP_DIRECTORY, 'settings.php', $code, false);
 create_file(__DIR__ . '/' . $APP_DIRECTORY, 'settings.sample', $code);
 
 // ============================================================================
@@ -256,7 +277,7 @@ foreach ($config as $route_name => $route_config) {
   $filename = $classname . '.php';
   $deps_members = '';
   $deps_list = '';
-  $deps_list_topass = '';
+  //$deps_list_topass = '';
   $deps_assign = '';
   $models_content = '';
   $action_content = '';
@@ -265,20 +286,25 @@ foreach ($config as $route_name => $route_config) {
   
   if (isset($route_config["deps"])) {
     $deps = array_map("trim", explode(",", $route_config["deps"]));
+    if (isset($route_config["models"])) {
+      // models are dependencies themselves
+      $deps = array_merge($deps, array_map(function($model) {
+        return ucfirst(trim($model)) . "Model";
+      }, explode(",", $route_config["models"])));
+    }
     foreach ($deps as $dep) {
       $deps_members .= "  private \$$dep;\r\n";
       $deps_assign .= "    \$this->$dep = \$$dep;\r\n";
     }
     $deps_list = implode(", ", array_map(function($d) { return '$' . $d; }, $deps));
-    $deps_list_topass = implode(", ", array_map(function($d) { return '$this->' . $d; }, $deps));
+    //$deps_list_topass = implode(", ", array_map(function($d) { return '$this->' . $d; }, $deps));
   }
   
   if (isset($route_config["models"])) {
     $models = array_map("trim", explode(",", $route_config["models"]));
     foreach ($models as $model) {
       $modelClassName = ucfirst(strtolower($model)) . 'Model';
-      $models_content .= "    \$$modelClassName = new \\$MAIN_NAMESPACE_NAME\Model\\$modelClassName($deps_list_topass);\r\n";
-      $models_content .= "    \$$model = \$$modelClassName" . "->get(\$args);\r\n\r\n";
+      $models_content .= "    \$$model = \$this->$modelClassName" . "->get(\$args);\r\n\r\n";
       $models_vars .= "      \"$model\" => \$$model,\r\n";
     }
   }
@@ -325,16 +351,11 @@ END_OF_CODE
 namespace $MAIN_NAMESPACE_NAME\Controller;
 
 class $classname {
-  private \$get;
-  private \$post;
 $deps_members  
   public function __construct($deps_list) {
 $deps_assign  }
   
-  public function __invoke(\$request, \$response, \$args) {
-    \$this->get = \$request->getQueryParams();
-    \$this->post = \$request->getParsedBody();
-    
+  public function __invoke(\$request, \$response, \$args) {  
 $models_content
 $invoke_content
   }
@@ -416,33 +437,25 @@ END_OF_CODE;
 // ============================================================================
 //  models
 // ============================================================================
-foreach ($config as $route_name => $route_config) {
-  if (isset($route_config["models"])) {
-    $models_arr = array_map("trim", explode(',', $route_config["models"]));
-    foreach ($models_arr as $model) {
-      $model_parts = explode("(", $model);
-      if (count($model_parts) > 1) {
-        $model = $model_parts[0];
-        $model_params = str_replace(")", "", $model_parts[1]);
-      }
-      $classname = ucfirst(strtolower($model)) . 'Model';
-      $filename = $classname . '.php';
-      
-      $deps_list = '';
-      $deps_members = '';
-      $deps_assign = '';
-      if (isset($route_config["deps"])) {
-        $deps = array_map("trim", explode(",", $route_config["deps"]));
-        foreach ($deps as $dep) {
-          $deps_members .= "  private \$$dep;\r\n";
-          $deps_assign .= "    \$this->$dep = \$$dep;\r\n";
-        }
-        $deps_list = implode(", ", array_map(function($d) { return '$' . $d; }, $deps));
-      }
-      
-      $custom_content = custom_content(
-        __DIR__ . '/' . $APP_DIRECTORY . '/src/Model/' . $filename,
-        <<<END_OF_CODE
+foreach ($config_models as $model_name => $model_config) {
+  $classname = ucfirst(strtolower($model_name)) . 'Model';
+  $filename = $classname . '.php';
+  $deps_members = '';
+  $deps_list = '';
+  $deps_assign = '';
+  
+  if (isset($model_config["deps"])) {
+    $deps = array_map("trim", explode(",", $model_config["deps"]));
+    foreach ($deps as $dep) {
+      $deps_members .= "  private \$$dep;\r\n";
+      $deps_assign .= "    \$this->$dep = \$$dep;\r\n";
+    }
+    $deps_list = implode(", ", array_map(function($d) { return '$' . $d; }, $deps));
+  }
+  
+  $custom_content = custom_content(
+    __DIR__ . '/' . $APP_DIRECTORY . '/src/Model/' . $filename,
+    <<<END_OF_CODE
   /* === DO NOT REMOVE THIS COMMENT */
   public function get(\$args) {
     // retrieve and return requested data here
@@ -456,8 +469,7 @@ END_OF_CODE
 namespace $MAIN_NAMESPACE_NAME\Model;
 
 class $classname {
-  
-$deps_members
+$deps_members    
   
   public function __construct($deps_list) {
 $deps_assign  }
@@ -465,9 +477,7 @@ $deps_assign  }
 $custom_content
 }
 END_OF_CODE;
-      create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src/Model', $filename, $code);
-    }
-  }
+  create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src/Model', $filename, $code);
 }
 
 // ============================================================================
@@ -561,6 +571,11 @@ class DB {
     }
   }
   
+  public function query(\$query, \$data) {
+    \$sth = \$this->_conn->prepare(\$query);
+    \$sth->execute(\$data);
+    return \$sth->fetchAll(\PDO::FETCH_ASSOC);
+  }
 }
 END_OF_CODE;
 create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', 'DB.php', $code);
@@ -648,3 +663,19 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/css', 'style.cs
 // ============================================================================
 $code = '';
 create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/js', 'index.js', $code);
+
+// ============================================================================
+//  database dump
+// ============================================================================
+
+try {
+  $opts = require __DIR__ . '/' . $APP_DIRECTORY . '/settings.php';
+  if (isset($opts['settings']['DB'])) {
+    $dump = new IMysqldump\Mysqldump('mysql:host=' . $opts['settings']['DB']['HOST'] . ';dbname=' . $opts['settings']['DB']['DBNAME'], 
+      $opts['settings']['DB']['USER'], 
+      $opts['settings']['DB']['PASS']);
+    $dump->start(__DIR__ . '/' . $APP_DIRECTORY . '/dump.sql');
+  }
+} catch (\Exception $e) {
+    echo 'mysqldump-php error: ' . $e->getMessage();
+}

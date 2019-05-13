@@ -2,8 +2,6 @@
 namespace BGame\Controller;
 
 class Login_exController {
-  private $get;
-  private $post;
   private $router;
   private $app;
   
@@ -12,10 +10,7 @@ class Login_exController {
     $this->app = $app;
   }
   
-  public function __invoke($request, $response, $args) {
-    $this->get = $request->getQueryParams();
-    $this->post = $request->getParsedBody();
-    
+  public function __invoke($request, $response, $args) {  
 
     $action = $this->doAction();
 

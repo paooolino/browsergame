@@ -2,36 +2,16 @@
 namespace BGame\Model;
 
 class LeagueslistModel {
+  private $db;
+    
   
-  private $view;
-  private $app;
-
-  
-  public function __construct($view, $app) {
-    $this->view = $view;
-    $this->app = $app;
+  public function __construct($db) {
+    $this->db = $db;
   }
   
   /* === DO NOT REMOVE THIS COMMENT */
   public function get() {
-    return [
-      [
-        "name" => "Serie A",
-        "url" => "serie-a"
-      ],
-      [
-        "name" => "Serie B",
-        "url" => "serie-b"
-      ],
-      [
-        "name" => "Lega Pro",
-        "url" => "lega-pro"
-      ],
-      [
-        "name" => "Campionato Nazionale Dilettanti",
-        "url" => "cnd"
-      ]
-    ];
+    return $this->db->query('SELECT * FROM leagues', []);
   }  
   /* === DO NOT REMOVE THIS COMMENT */
 }

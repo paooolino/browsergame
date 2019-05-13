@@ -2,22 +2,18 @@
 namespace BGame\Controller;
 
 class LoginController {
-  private $get;
-  private $post;
   private $view;
   private $app;
+  private $LeagueslistModel;
   
-  public function __construct($view, $app) {
+  public function __construct($view, $app, $LeagueslistModel) {
     $this->view = $view;
     $this->app = $app;
+    $this->LeagueslistModel = $LeagueslistModel;
   }
   
-  public function __invoke($request, $response, $args) {
-    $this->get = $request->getQueryParams();
-    $this->post = $request->getParsedBody();
-    
-    $LeagueslistModel = new \BGame\Model\LeagueslistModel($this->view, $this->app);
-    $leagueslist = $LeagueslistModel->get($args);
+  public function __invoke($request, $response, $args) {  
+    $leagueslist = $this->LeagueslistModel->get($args);
 
 
     return $this->view->render($response, 'login.php', [

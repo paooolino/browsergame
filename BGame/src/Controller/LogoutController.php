@@ -2,16 +2,11 @@
 namespace BGame\Controller;
 
 class LogoutController {
-  private $get;
-  private $post;
   
   public function __construct() {
   }
   
-  public function __invoke($request, $response, $args) {
-    $this->get = $request->getQueryParams();
-    $this->post = $request->getParsedBody();
-    
+  public function __invoke($request, $response, $args) {  
 
     $action = $this->doAction();
 

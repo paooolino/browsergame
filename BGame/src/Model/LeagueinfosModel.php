@@ -2,14 +2,11 @@
 namespace BGame\Model;
 
 class LeagueinfosModel {
+  private $db;
+    
   
-  private $view;
-  private $app;
-
-  
-  public function __construct($view, $app) {
-    $this->view = $view;
-    $this->app = $app;
+  public function __construct($db) {
+    $this->db = $db;
   }
   
   /* === DO NOT REMOVE THIS COMMENT */

@@ -35,11 +35,11 @@ $container['BGame\Middleware\Auth'] = function ($c) {
 // Controller factories
 // -----------------------------------------------------------------------------
 $container['BGame\Controller\HomeController'] = function ($c) {
-  return new BGame\Controller\HomeController($c->view, $c->app);
+  return new BGame\Controller\HomeController($c->view, $c->app, $c->LeagueslistModel);
 };
 
 $container['BGame\Controller\LoginController'] = function ($c) {
-  return new BGame\Controller\LoginController($c->view, $c->app);
+  return new BGame\Controller\LoginController($c->view, $c->app, $c->LeagueslistModel);
 };
 
 $container['BGame\Controller\Login_exController'] = function ($c) {
@@ -59,13 +59,21 @@ $container['BGame\Controller\LogoutController'] = function ($c) {
 };
 
 $container['BGame\Controller\LeagueController'] = function ($c) {
-  return new BGame\Controller\LeagueController($c->view, $c->app);
+  return new BGame\Controller\LeagueController($c->view, $c->app, $c->LeagueslistModel, $c->LeagueinfosModel);
 };
 
 
 // -----------------------------------------------------------------------------
 // Model factories
 // -----------------------------------------------------------------------------
+$container['LeagueslistModel'] = function ($c) {
+  return new BGame\Model\LeagueslistModel($c->db);
+};
+
+$container['LeagueinfosModel'] = function ($c) {
+  return new BGame\Model\LeagueinfosModel($c->db);
+};
+
 
 // -----------------------------------------------------------------------------
 // Actions factories

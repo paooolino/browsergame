@@ -23,4 +23,9 @@ class DB {
     }
   }
   
+  public function query($query, $data) {
+    $sth = $this->_conn->prepare($query);
+    $sth->execute($data);
+    return $sth->fetchAll(\PDO::FETCH_ASSOC);
+  }
 }
