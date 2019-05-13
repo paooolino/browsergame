@@ -4,6 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
+    "hash": "2134f86d0720e6f5de3be23e1488bc27",
     "content-hash": "f3506ae4159bb5307fd4ad57285f9107",
     "packages": [
         {
@@ -35,7 +36,7 @@
             ],
             "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
             "homepage": "https://github.com/container-interop/container-interop",
-            "time": "2017-02-14T19:40:03+00:00"
+            "time": "2017-02-14 19:40:03"
         },
         {
             "name": "ifsnop/mysqldump-php",
@@ -90,7 +91,7 @@
                 "php5",
                 "sql"
             ],
-            "time": "2019-02-18T23:38:33+00:00"
+            "time": "2019-02-18 23:38:33"
         },
         {
             "name": "nikic/fast-route",
@@ -136,7 +137,7 @@
                 "router",
                 "routing"
             ],
-            "time": "2018-02-13T20:26:39+00:00"
+            "time": "2018-02-13 20:26:39"
         },
         {
             "name": "pimple/pimple",
@@ -186,7 +187,7 @@
                 "container",
                 "dependency injection"
             ],
-            "time": "2018-01-21T07:42:36+00:00"
+            "time": "2018-01-21 07:42:36"
         },
         {
             "name": "psr/container",
@@ -235,7 +236,7 @@
                 "container-interop",
                 "psr"
             ],
-            "time": "2017-02-14T16:28:37+00:00"
+            "time": "2017-02-14 16:28:37"
         },
         {
             "name": "psr/http-message",
@@ -285,7 +286,7 @@
                 "request",
                 "response"
             ],
-            "time": "2016-08-06T14:39:51+00:00"
+            "time": "2016-08-06 14:39:51"
         },
         {
             "name": "slim/php-view",
@@ -334,7 +335,7 @@
                 "template",
                 "view"
             ],
-            "time": "2019-04-15T20:43:28+00:00"
+            "time": "2019-04-15 20:43:28"
         },
         {
             "name": "slim/slim",
@@ -405,7 +406,7 @@
                 "micro",
                 "router"
             ],
-            "time": "2019-04-16T16:47:29+00:00"
+            "time": "2019-04-16 16:47:29"
         }
     ],
     "packages-dev": [],

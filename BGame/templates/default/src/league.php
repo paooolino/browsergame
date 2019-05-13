@@ -17,14 +17,14 @@
   <tbody>
     <?php foreach ($leagueinfos["standings"] as $row) { ?>
     <tr>
-      <td><?php echo $row["team"]; ?></td> 
+      <td><a href="<?php echo $router->pathFor("TEAM", ["id" => $row["id_team"]]); ?>"><?php echo $row["team"]; ?></a></td> 
       <td><?php echo $row["points"]; ?></td> 
-      <?php if(false) { ?><td><?php echo $row["played"]; ?></td> 
+      <td><?php echo $row["played"]; ?></td> 
       <td><?php echo $row["wins"]; ?></td> 
       <td><?php echo $row["draws"]; ?></td> 
       <td><?php echo $row["loss"]; ?></td> 
       <td><?php echo $row["goals_scored"]; ?></td> 
-      <td><?php echo $row["goals_taken"]; ?></td> <?php } ?>
+      <td><?php echo $row["goals_taken"]; ?></td>
     </tr>  
     <?php } ?>
   </tbody>

@@ -62,6 +62,10 @@ $container['BGame\Controller\LeagueController'] = function ($c) {
   return new BGame\Controller\LeagueController($c->view, $c->app, $c->LeagueslistModel, $c->LeagueinfosModel);
 };
 
+$container['BGame\Controller\TeamController'] = function ($c) {
+  return new BGame\Controller\TeamController($c->view, $c->app, $c->LeagueslistModel, $c->TeaminfosModel);
+};
+
 
 // -----------------------------------------------------------------------------
 // Model factories
@@ -72,6 +76,10 @@ $container['LeagueslistModel'] = function ($c) {
 
 $container['LeagueinfosModel'] = function ($c) {
   return new BGame\Model\LeagueinfosModel($c->db);
+};
+
+$container['TeaminfosModel'] = function ($c) {
+  return new BGame\Model\TeaminfosModel($c->db);
 };
 
 

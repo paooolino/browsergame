@@ -6,3 +6,4 @@ $app->get('/dashboard', 'BGame\Controller\DashboardController')->setName('DASHBO
 $app->get('/admin', 'BGame\Controller\AdminController')->setName('ADMIN');
 $app->post('/logout', 'BGame\Controller\LogoutController')->setName('LOGOUT');
 $app->get('/league/{url}', 'BGame\Controller\LeagueController')->setName('LEAGUE');
+$app->get('/team/{id}', 'BGame\Controller\TeamController')->setName('TEAM');

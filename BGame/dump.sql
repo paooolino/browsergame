@@ -3,7 +3,7 @@
 -- Host: localhost	Database: bgame
 -- ------------------------------------------------------
 -- Server version 	5.7.19
--- Date: Mon, 13 May 2019 15:51:28 +0000
+-- Date: Mon, 13 May 2019 21:11:48 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -46,6 +46,37 @@ COMMIT;
 --
 
 --
+-- Table structure for table `players`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `players` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `team_id` int(10) unsigned DEFAULT NULL,
+  `surname` varchar(50) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `role` varchar(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `players`
+--
+
+LOCK TABLES `players` WRITE;
+/*!40000 ALTER TABLE `players` DISABLE KEYS */;
+SET autocommit=0;
+INSERT INTO `players` VALUES (1,1,'Chiellini','Giorgio','D'),(2,1,'Ronaldo','Cristiano','A');
+/*!40000 ALTER TABLE `players` ENABLE KEYS */;
+UNLOCK TABLES;
+COMMIT;
+
+-- Dumped table `players` with 2 row(s)
+--
+
+--
 -- Table structure for table `standings`
 --
 
@@ -53,9 +84,15 @@ COMMIT;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `standings` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `id_league` int(10) unsigned NOT NULL DEFAULT '0',
+  `id_league` int(10) unsigned DEFAULT NULL,
   `id_team` int(10) unsigned DEFAULT NULL,
-  `points` int(10) unsigned DEFAULT NULL,
+  `points` int(10) unsigned DEFAULT '0',
+  `played` int(10) unsigned DEFAULT '0',
+  `wins` int(10) unsigned DEFAULT '0',
+  `draws` int(10) unsigned DEFAULT '0',
+  `loss` int(10) unsigned DEFAULT '0',
+  `goals_scored` int(10) unsigned DEFAULT '0',
+  `goals_taken` int(10) unsigned DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -67,7 +104,7 @@ CREATE TABLE `standings` (
 LOCK TABLES `standings` WRITE;
 /*!40000 ALTER TABLE `standings` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `standings` VALUES (1,1,1,0),(2,1,2,0),(3,1,3,0),(4,1,4,0),(5,2,5,0),(6,2,6,0),(7,2,7,0),(8,2,8,0);
+INSERT INTO `standings` VALUES (1,1,1,0,0,0,0,0,0,0),(2,1,2,0,0,0,0,0,0,0),(3,1,3,0,0,0,0,0,0,0),(4,1,4,0,0,0,0,0,0,0),(5,2,5,0,0,0,0,0,0,0),(6,2,6,0,0,0,0,0,0,0),(7,2,7,0,0,0,0,0,0,0),(8,2,8,0,0,0,0,0,0,0);
 /*!40000 ALTER TABLE `standings` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -112,4 +149,4 @@ COMMIT;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Mon, 13 May 2019 15:51:28 +0000
+-- Dump completed on: Mon, 13 May 2019 21:11:48 +0000
