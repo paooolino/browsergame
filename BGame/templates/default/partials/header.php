@@ -11,9 +11,9 @@
 <body>
   <header>
     <div class="container-fluid">
-      <?php require __DIR__ . '/' . 'topnav.php'; ?>
+    <?php require __DIR__ . '/' . 'topnav.php'; ?>
     </div>
     <div class="container">
-      <?php require __DIR__ . '/' . 'publicnav.php'; ?>
+    <?php require __DIR__ . '/' . 'publicnav.php'; ?>
     </div>
   </header>
