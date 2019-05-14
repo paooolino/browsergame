@@ -671,9 +671,13 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/js', 'index.js'
 try {
   $opts = require __DIR__ . '/' . $APP_DIRECTORY . '/settings.php';
   if (isset($opts['settings']['DB'])) {
+    $dump_settings = [
+      'add-drop-table' => true,
+    ];
     $dump = new IMysqldump\Mysqldump('mysql:host=' . $opts['settings']['DB']['HOST'] . ';dbname=' . $opts['settings']['DB']['DBNAME'], 
       $opts['settings']['DB']['USER'], 
-      $opts['settings']['DB']['PASS']);
+      $opts['settings']['DB']['PASS'],
+      $dump_settings);
     $dump->start(__DIR__ . '/' . $APP_DIRECTORY . '/dump.sql');
   }
 } catch (\Exception $e) {

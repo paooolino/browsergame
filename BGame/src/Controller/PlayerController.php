@@ -1,29 +1,29 @@
 <?php
 namespace BGame\Controller;
 
-class TeamController {
+class PlayerController {
   private $view;
   private $app;
   private $LeaguesModel;
-  private $TeamModel;
+  private $PlayerModel;
   
-  public function __construct($view, $app, $LeaguesModel, $TeamModel) {
+  public function __construct($view, $app, $LeaguesModel, $PlayerModel) {
     $this->view = $view;
     $this->app = $app;
     $this->LeaguesModel = $LeaguesModel;
-    $this->TeamModel = $TeamModel;
+    $this->PlayerModel = $PlayerModel;
   }
   
   public function __invoke($request, $response, $args) {  
     $leagues = $this->LeaguesModel->get($args);
 
-    $team = $this->TeamModel->get($args);
+    $player = $this->PlayerModel->get($args);
 
 
-    return $this->view->render($response, 'team.php', [
+    return $this->view->render($response, 'player.php', [
       "templateUrl" => $this->app->templateUrl,
       "leagues" => $leagues,
-      "team" => $team,
+      "player" => $player,
     ]);
   }
   

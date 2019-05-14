@@ -3,7 +3,7 @@
 -- Host: localhost	Database: bgame
 -- ------------------------------------------------------
 -- Server version 	5.7.19
--- Date: Mon, 13 May 2019 21:11:48 +0000
+-- Date: Tue, 14 May 2019 10:06:36 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -20,12 +20,12 @@
 -- Table structure for table `leagues`
 --
 
+DROP TABLE IF EXISTS `leagues`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `leagues` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
-  `url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -37,7 +37,7 @@ CREATE TABLE `leagues` (
 LOCK TABLES `leagues` WRITE;
 /*!40000 ALTER TABLE `leagues` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `leagues` VALUES (1,'Serie A','serie-a'),(2,'Serie B','serie-b'),(3,'Lega Pro','lega-pro'),(4,'Campionato Nazionale Dilettanti','cnd');
+INSERT INTO `leagues` VALUES (1,'Serie A'),(2,'Serie B'),(3,'Lega Pro'),(4,'Campionato Nazionale Dilettanti');
 /*!40000 ALTER TABLE `leagues` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -46,17 +46,52 @@ COMMIT;
 --
 
 --
+-- Table structure for table `matches`
+--
+
+DROP TABLE IF EXISTS `matches`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `matches` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_team1` int(10) unsigned DEFAULT NULL,
+  `id_team2` int(10) unsigned DEFAULT NULL,
+  `scheduled_turn` int(10) unsigned DEFAULT '0',
+  `goals_team1` int(10) unsigned DEFAULT '0',
+  `goals_team2` int(10) unsigned DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `matches`
+--
+
+LOCK TABLES `matches` WRITE;
+/*!40000 ALTER TABLE `matches` DISABLE KEYS */;
+SET autocommit=0;
+/*!40000 ALTER TABLE `matches` ENABLE KEYS */;
+UNLOCK TABLES;
+COMMIT;
+
+-- Dumped table `matches` with 0 row(s)
+--
+
+--
 -- Table structure for table `players`
 --
 
+DROP TABLE IF EXISTS `players`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `players` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `team_id` int(10) unsigned DEFAULT NULL,
+  `id_team` int(10) unsigned DEFAULT NULL,
   `surname` varchar(50) DEFAULT NULL,
   `name` varchar(50) DEFAULT NULL,
   `role` varchar(1) DEFAULT NULL,
+  `ability` int(11) DEFAULT '0',
+  `form` int(11) DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -68,7 +103,7 @@ CREATE TABLE `players` (
 LOCK TABLES `players` WRITE;
 /*!40000 ALTER TABLE `players` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `players` VALUES (1,1,'Chiellini','Giorgio','D'),(2,1,'Ronaldo','Cristiano','A');
+INSERT INTO `players` VALUES (1,1,'Chiellini','Giorgio','D',0,0),(2,1,'Ronaldo','Cristiano','A',0,0);
 /*!40000 ALTER TABLE `players` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -80,6 +115,7 @@ COMMIT;
 -- Table structure for table `standings`
 --
 
+DROP TABLE IF EXISTS `standings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `standings` (
@@ -116,6 +152,7 @@ COMMIT;
 -- Table structure for table `teams`
 --
 
+DROP TABLE IF EXISTS `teams`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `teams` (
@@ -149,4 +186,4 @@ COMMIT;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Mon, 13 May 2019 21:11:48 +0000
+-- Dump completed on: Tue, 14 May 2019 10:06:36 +0000

@@ -3,9 +3,11 @@ namespace BGame\Controller;
 
 class AdminController {
   private $view;
+  private $app;
   
-  public function __construct($view) {
+  public function __construct($view, $app) {
     $this->view = $view;
+    $this->app = $app;
   }
   
   public function __invoke($request, $response, $args) {  

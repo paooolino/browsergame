@@ -4,26 +4,36 @@ namespace BGame\Controller;
 class LeagueController {
   private $view;
   private $app;
-  private $LeagueslistModel;
-  private $LeagueinfosModel;
+  private $LeaguesModel;
+  private $LeagueModel;
+  private $StandingsModel;
+  private $FixturesModel;
   
-  public function __construct($view, $app, $LeagueslistModel, $LeagueinfosModel) {
+  public function __construct($view, $app, $LeaguesModel, $LeagueModel, $StandingsModel, $FixturesModel) {
     $this->view = $view;
     $this->app = $app;
-    $this->LeagueslistModel = $LeagueslistModel;
-    $this->LeagueinfosModel = $LeagueinfosModel;
+    $this->LeaguesModel = $LeaguesModel;
+    $this->LeagueModel = $LeagueModel;
+    $this->StandingsModel = $StandingsModel;
+    $this->FixturesModel = $FixturesModel;
   }
   
   public function __invoke($request, $response, $args) {  
-    $leagueslist = $this->LeagueslistModel->get($args);
+    $leagues = $this->LeaguesModel->get($args);
 
-    $leagueinfos = $this->LeagueinfosModel->get($args);
+    $league = $this->LeagueModel->get($args);
+
+    $standings = $this->StandingsModel->get($args);
+
+    $fixtures = $this->FixturesModel->get($args);
 
 
     return $this->view->render($response, 'league.php', [
       "templateUrl" => $this->app->templateUrl,
-      "leagueslist" => $leagueslist,
-      "leagueinfos" => $leagueinfos,
+      "leagues" => $leagues,
+      "league" => $league,
+      "standings" => $standings,
+      "fixtures" => $fixtures,
     ]);
   }
   
