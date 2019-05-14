@@ -94,6 +94,14 @@ function custom_content($file, $default_custom_content) {
   return $custom_content;
 }
 
+function move_in_old($dir, $files) {
+  if (!is_dir($dir . '/old'))
+    mkdir($dir . '/old', 0777, true);    
+  foreach ($files as $f) {
+    rename($dir . '/' . $f, $dir . '/old/' . $f);
+  }
+}
+
 // ============================================================================
 //  bootstrap.php
 // ============================================================================
@@ -272,6 +280,12 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY, 'settings.sample', $code);
 // ============================================================================
 //  controllers
 // ============================================================================
+$existents = [];
+if (is_dir(__DIR__ . '/' . $APP_DIRECTORY . '/src/Controller')) {
+  $existents = scandir(__DIR__ . '/' . $APP_DIRECTORY . '/src/Controller');
+  $existents = array_filter($existents, function($item) { return !($item == "." || $item == ".." || $item == 'old' || strpos($item, '/') !== false); });
+}
+$controllers = [];
 foreach ($config as $route_name => $route_config) {
   $classname = ucfirst(strtolower($route_name)) . 'Controller';
   $filename = $classname . '.php';
@@ -365,7 +379,9 @@ $action_content
 END_OF_CODE;
   
   create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src/Controller', $filename, $code);
+  $controllers[] = $filename;
 }
+move_in_old(__DIR__ . '/' . $APP_DIRECTORY . '/src/Controller', array_diff($existents, $controllers));
 
 // ============================================================================
 //  middlewares: AppInit
@@ -437,6 +453,12 @@ END_OF_CODE;
 // ============================================================================
 //  models
 // ============================================================================
+$existents = [];
+if (is_dir(__DIR__ . '/' . $APP_DIRECTORY . '/src/Model')) {
+  $existents = scandir(__DIR__ . '/' . $APP_DIRECTORY . '/src/Model');
+  $existents = array_filter($existents, function($item) { return !($item == "." || $item == ".." || $item == 'old' || strpos($item, '/') !== false); });
+}
+$models = [];
 foreach ($config_models as $model_name => $model_config) {
   $classname = ucfirst(strtolower($model_name)) . 'Model';
   $filename = $classname . '.php';
@@ -478,7 +500,9 @@ $custom_content
 }
 END_OF_CODE;
   create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src/Model', $filename, $code);
+  $models[] = $filename;
 }
+move_in_old(__DIR__ . '/' . $APP_DIRECTORY . '/src/Model', array_diff($existents, $models));
 
 // ============================================================================
 //  actions

@@ -4,21 +4,21 @@ namespace BGame\Controller;
 class HomeController {
   private $view;
   private $app;
-  private $LeagueslistModel;
+  private $LeaguesModel;
   
-  public function __construct($view, $app, $LeagueslistModel) {
+  public function __construct($view, $app, $LeaguesModel) {
     $this->view = $view;
     $this->app = $app;
-    $this->LeagueslistModel = $LeagueslistModel;
+    $this->LeaguesModel = $LeaguesModel;
   }
   
   public function __invoke($request, $response, $args) {  
-    $leagueslist = $this->LeagueslistModel->get($args);
+    $leagues = $this->LeaguesModel->get($args);
 
 
     return $this->view->render($response, 'home.php', [
       "templateUrl" => $this->app->templateUrl,
-      "leagueslist" => $leagueslist,
+      "leagues" => $leagues,
     ]);
   }
   
