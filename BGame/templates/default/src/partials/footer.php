@@ -1,7 +1,37 @@
   
   <footer>
     <div class="container-fluid">
-      Copyright
+      <div class="container">
+        <div class="row">
+          <div class="col-sm">
+            <p><strong>Esplora le serie</strong></p>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="<?php echo $router->pathFor("HOME"); ?>">Home</a>
+              </li>
+              <?php foreach ($leagues as $league) { ?>
+              <li class="nav-item">
+                <a class="nav-link" href="<?php echo $router->pathFor("LEAGUE", ["id" => $league["id"]]); ?>"><?php echo $league["name"]; ?></a>
+              </li>
+              <?php } ?>
+            </ul>
+          </div>
+          <div class="col-sm">
+            <p><strong>Interagisci</strong></p>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="<?php echo $router->pathFor("REGISTER"); ?>">Registrati</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="<?php echo $router->pathFor("LOGIN"); ?>">Login</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-sm">
+            Copyright (c) <?php echo date("Y"); ?>
+          </div>
+        </div>
+      </div>
     </div>
   </footer>
   

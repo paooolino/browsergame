@@ -1,14 +1,26 @@
 
 <form method="post" action="<?php echo $router->pathFor("LOGIN_EX"); ?>">
-  <div class="formRow">
-    <div class="formLabel">Username</div>
-    <div class="formField"><input type="text" name="username" /></div>
-  </div>
-  <div class="formRow">
-    <div class="formLabel">Password</div>
-    <div class="formField"><input type="password" name="password" /></div>
-  </div>
-  <div class="formRow">
-    <button type="submit">Entra</button>
+  <div class="row">
+    <div class="col-sm">
+      <h1>Login</h1>
+      <div class="form-group">
+        <label for="exampleInputEmail1">Email address</label>
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+      </div>
+      <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" id="exampleCheck1">
+        <label class="form-check-label" for="exampleCheck1">Check me out</label>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+    <div class="col-sm">
+    </div>
+    <div class="col-sm">
+    </div>
   </div>
 </form>

@@ -7,6 +7,9 @@ $app->get('/player/{id}', 'BGame\Controller\PlayerController')->setName('PLAYER'
 $app->get('/match/{id}', 'BGame\Controller\MatchController')->setName('MATCH');
 $app->get('/login', 'BGame\Controller\LoginController')->setName('LOGIN');
 $app->post('/login', 'BGame\Controller\Login_exController')->setName('LOGIN_EX');
+$app->get('/register', 'BGame\Controller\RegisterController')->setName('REGISTER');
+$app->post('/register', 'BGame\Controller\Register_exController')->setName('REGISTER_EX');
+$app->get('/register-confirm', 'BGame\Controller\Register_confirmController')->setName('REGISTER_CONFIRM');
 $app->get('/dashboard', 'BGame\Controller\DashboardController')->setName('DASHBOARD');
 $app->post('/logout', 'BGame\Controller\LogoutController')->setName('LOGOUT');
 $app->get('/admin/login', 'BGame\Controller\Admin_loginController')->setName('ADMIN_LOGIN');

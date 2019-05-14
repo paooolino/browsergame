@@ -66,6 +66,18 @@ $container['BGame\Controller\Login_exController'] = function ($c) {
   return new BGame\Controller\Login_exController($c->router, $c->app);
 };
 
+$container['BGame\Controller\RegisterController'] = function ($c) {
+  return new BGame\Controller\RegisterController($c->view, $c->app, $c->LeaguesModel);
+};
+
+$container['BGame\Controller\Register_exController'] = function ($c) {
+  return new BGame\Controller\Register_exController($c->router, $c->app);
+};
+
+$container['BGame\Controller\Register_confirmController'] = function ($c) {
+  return new BGame\Controller\Register_confirmController($c->view, $c->app, $c->LeaguesModel);
+};
+
 $container['BGame\Controller\DashboardController'] = function ($c) {
   return new BGame\Controller\DashboardController($c->view, $c->app);
 };
