@@ -12,7 +12,7 @@
           <form action="<?php $router->pathFor("ADMIN_CREATE_PLAYERS_EX"); ?>" method="post" class="form-inline">
             <div class="form-group">
               <label>Quanti giocatori vuoi creare?</label>
-              <input type="number" value="0" class="form-control mx-3" min="0" placeholder="Inserisci un numero maggiore di zero">
+              <input name="n" type="number" value="1" class="form-control mx-3" min="1" placeholder="Inserisci un numero maggiore di zero">
             </div>
             <button type="submit" class="btn btn-primary">Crea</button>
           </form>

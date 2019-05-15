@@ -12,7 +12,7 @@ class Login_exController {
   
   public function __invoke($request, $response, $args) {  
 
-    $action = $this->doAction();
+    $action = $this->doAction($request, $response, $args);
 
     if ($action["status"] == "failure") {
       return $response->withRedirect($this->router->pathFor("ERROR"));

@@ -3,7 +3,7 @@
 -- Host: localhost	Database: bgame
 -- ------------------------------------------------------
 -- Server version 	5.7.19
--- Date: Wed, 15 May 2019 15:37:02 +0000
+-- Date: Wed, 15 May 2019 21:29:28 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -94,7 +94,7 @@ CREATE TABLE `players` (
   `ability` int(11) DEFAULT '0',
   `form` int(11) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -104,12 +104,12 @@ CREATE TABLE `players` (
 LOCK TABLES `players` WRITE;
 /*!40000 ALTER TABLE `players` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `players` VALUES (1,1,'Chiellini','Giorgio',16,'D',0,0),(2,1,'Ronaldo','Cristiano',16,'A',0,0);
+INSERT INTO `players` VALUES (1,1,'Chiellini','Giorgio',16,'D',0,0),(2,1,'Ronaldo','Cristiano',16,'A',0,0),(3,NULL,'Biagi\r\n','Pasquale\r\n',41,'D',35,47),(4,NULL,'Bevilacqua\r\n','Aristeo\r\n',23,'D',60,100);
 /*!40000 ALTER TABLE `players` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
 
--- Dumped table `players` with 2 row(s)
+-- Dumped table `players` with 4 row(s)
 --
 
 --
@@ -187,4 +187,4 @@ COMMIT;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Wed, 15 May 2019 15:37:02 +0000
+-- Dump completed on: Wed, 15 May 2019 21:29:28 +0000

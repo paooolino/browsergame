@@ -23,7 +23,7 @@ $container['db'] = function($c) {
 };
 
 $container['admin'] = function($c) {
-  return new BGame\Admin();
+  return new BGame\Admin($c->db);
 };
 
 // -----------------------------------------------------------------------------
