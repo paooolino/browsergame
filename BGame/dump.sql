@@ -3,7 +3,7 @@
 -- Host: localhost	Database: bgame
 -- ------------------------------------------------------
 -- Server version 	5.7.19
--- Date: Tue, 14 May 2019 21:55:27 +0000
+-- Date: Wed, 15 May 2019 15:37:02 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -89,6 +89,7 @@ CREATE TABLE `players` (
   `id_team` int(10) unsigned DEFAULT NULL,
   `surname` varchar(50) DEFAULT NULL,
   `name` varchar(50) DEFAULT NULL,
+  `age` int(11) DEFAULT '16',
   `role` varchar(1) DEFAULT NULL,
   `ability` int(11) DEFAULT '0',
   `form` int(11) DEFAULT '0',
@@ -103,7 +104,7 @@ CREATE TABLE `players` (
 LOCK TABLES `players` WRITE;
 /*!40000 ALTER TABLE `players` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `players` VALUES (1,1,'Chiellini','Giorgio','D',0,0),(2,1,'Ronaldo','Cristiano','A',0,0);
+INSERT INTO `players` VALUES (1,1,'Chiellini','Giorgio',16,'D',0,0),(2,1,'Ronaldo','Cristiano',16,'A',0,0);
 /*!40000 ALTER TABLE `players` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
@@ -186,4 +187,4 @@ COMMIT;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Tue, 14 May 2019 21:55:27 +0000
+-- Dump completed on: Wed, 15 May 2019 15:37:02 +0000

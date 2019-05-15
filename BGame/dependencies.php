@@ -21,6 +21,11 @@ $container['db'] = function($c) {
   );
   return $db;
 };
+
+$container['admin'] = function($c) {
+  return new BGame\Admin();
+};
+
 // -----------------------------------------------------------------------------
 // Middleware factories
 // -----------------------------------------------------------------------------
@@ -36,10 +41,6 @@ $container['BGame\Middleware\Auth'] = function ($c) {
 // -----------------------------------------------------------------------------
 $container['BGame\Controller\HomeController'] = function ($c) {
   return new BGame\Controller\HomeController($c->view, $c->app, $c->LeaguesModel);
-};
-
-$container['BGame\Controller\AdminController'] = function ($c) {
-  return new BGame\Controller\AdminController($c->view, $c->app);
 };
 
 $container['BGame\Controller\LeagueController'] = function ($c) {
@@ -86,32 +87,52 @@ $container['BGame\Controller\LogoutController'] = function ($c) {
   return new BGame\Controller\LogoutController();
 };
 
-$container['BGame\Controller\Admin_loginController'] = function ($c) {
-  return new BGame\Controller\Admin_loginController($c->view, $c->admin, $c->TablesModel);
+$container['BGame\Controller\AdminController'] = function ($c) {
+  return new BGame\Controller\AdminController($c->view, $c->app, $c->LeaguesModel, $c->AdminmenuitemsModel);
+};
+
+$container['BGame\Controller\Admin_messageController'] = function ($c) {
+  return new BGame\Controller\Admin_messageController($c->view, $c->app, $c->admin, $c->LeaguesModel, $c->AdminmenuitemsModel);
 };
 
 $container['BGame\Controller\Admin_newseasonController'] = function ($c) {
   return new BGame\Controller\Admin_newseasonController($c->router, $c->admin);
 };
 
+$container['BGame\Controller\Admin_create_playersController'] = function ($c) {
+  return new BGame\Controller\Admin_create_playersController($c->view, $c->app, $c->admin, $c->LeaguesModel, $c->AdminmenuitemsModel, $c->CountsModel);
+};
+
+$container['BGame\Controller\Admin_create_players_exController'] = function ($c) {
+  return new BGame\Controller\Admin_create_players_exController($c->router, $c->admin);
+};
+
+$container['BGame\Controller\Admin_schedule_matchController'] = function ($c) {
+  return new BGame\Controller\Admin_schedule_matchController($c->view, $c->admin, $c->LeaguesModel);
+};
+
+$container['BGame\Controller\Admin_schedule_competitionController'] = function ($c) {
+  return new BGame\Controller\Admin_schedule_competitionController($c->view, $c->admin, $c->LeaguesModel);
+};
+
 $container['BGame\Controller\Admin_tableController'] = function ($c) {
-  return new BGame\Controller\Admin_tableController($c->view, $c->admin, $c->TableModel);
+  return new BGame\Controller\Admin_tableController($c->view, $c->admin, $c->LeaguesModel, $c->TableModel);
 };
 
 $container['BGame\Controller\Admin_recordController'] = function ($c) {
-  return new BGame\Controller\Admin_recordController($c->view, $c->admin, $c->TableModel, $c->RecordModel);
+  return new BGame\Controller\Admin_recordController($c->view, $c->admin, $c->LeaguesModel, $c->TableModel, $c->RecordModel);
 };
 
 $container['BGame\Controller\Admin_record_newController'] = function ($c) {
-  return new BGame\Controller\Admin_record_newController($c->view, $c->admin, $c->TableModel);
+  return new BGame\Controller\Admin_record_newController($c->view, $c->admin, $c->LeaguesModel, $c->TableModel);
 };
 
 $container['BGame\Controller\Admin_record_editController'] = function ($c) {
-  return new BGame\Controller\Admin_record_editController($c->view, $c->admin, $c->TableModel, $c->RecordModel);
+  return new BGame\Controller\Admin_record_editController($c->view, $c->admin, $c->LeaguesModel, $c->TableModel, $c->RecordModel);
 };
 
 $container['BGame\Controller\Admin_record_deleteController'] = function ($c) {
-  return new BGame\Controller\Admin_record_deleteController($c->view, $c->admin, $c->TableModel, $c->RecordModel);
+  return new BGame\Controller\Admin_record_deleteController($c->view, $c->admin, $c->LeaguesModel, $c->TableModel, $c->RecordModel);
 };
 
 
@@ -136,6 +157,14 @@ $container['PlayerModel'] = function ($c) {
 
 $container['MatchModel'] = function ($c) {
   return new BGame\Model\MatchModel($c->db);
+};
+
+$container['AdminmenuitemsModel'] = function ($c) {
+  return new BGame\Model\AdminmenuitemsModel($c->router);
+};
+
+$container['CountsModel'] = function ($c) {
+  return new BGame\Model\CountsModel($c->db);
 };
 
 

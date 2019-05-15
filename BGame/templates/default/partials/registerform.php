@@ -1,47 +1,24 @@
+
 <form method="post" action="<?php echo $router->pathFor("REGISTER_EX"); ?>">
   <h1>Registrazione</h1>
   <div class="form-row">
-    <div class="form-group col-md-6">
+    <div class="form-group col-sm">
       <label for="inputEmail4">Email</label>
       <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
     </div>
-    <div class="form-group col-md-6">
+  </div>
+  <div class="form-row">
+    <div class="form-group col-sm">
       <label for="inputPassword4">Password</label>
       <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
     </div>
   </div>
-  <div class="form-group">
-    <label for="inputAddress">Address</label>
-    <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
-  </div>
-  <div class="form-group">
-    <label for="inputAddress2">Address 2</label>
-    <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
-  </div>
   <div class="form-row">
-    <div class="form-group col-md-6">
-      <label for="inputCity">City</label>
-      <input type="text" class="form-control" id="inputCity">
-    </div>
-    <div class="form-group col-md-4">
-      <label for="inputState">State</label>
-      <select id="inputState" class="form-control">
-        <option selected>Choose...</option>
-        <option>...</option>
-      </select>
-    </div>
-    <div class="form-group col-md-2">
-      <label for="inputZip">Zip</label>
-      <input type="text" class="form-control" id="inputZip">
+    <div class="form-group col-sm">
+      <label for="inputPassword4">Riscrivi la Password</label>
+      <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
     </div>
   </div>
-  <div class="form-group">
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" id="gridCheck">
-      <label class="form-check-label" for="gridCheck">
-        Check me out
-      </label>
-    </div>
-  </div>
-  <button type="submit" class="btn btn-primary">Sign in</button>
+  <button type="submit" class="btn btn-primary">Crea un account</button>
+  <p>Hai già un account? <a href="<?php echo $router->pathFor("LOGIN"); ?>">vai alla pagina di Login</a> </p>   
 </form>

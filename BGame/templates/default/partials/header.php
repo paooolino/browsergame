@@ -9,11 +9,14 @@
   <!-- fontawesome -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
   
+  <!-- custom css -->
+  <link rel="stylesheet" href="<?php echo $templateUrl; ?>/css/style.css">
+   
   <title></title>
 </head>
 <body>
   <header>
     <div class="container-fluid">
-    <?php require __DIR__ . '/' . 'topnav.php'; ?>
+      <?php require __DIR__ . '/' . 'topnav.php'; ?>
     </div>
   </header>

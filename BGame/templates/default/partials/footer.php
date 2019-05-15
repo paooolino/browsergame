@@ -1,29 +1,29 @@
   
-  <footer>
+  <footer class="page-footer font-small blue pt-4">
     <div class="container-fluid">
       <div class="container">
         <div class="row">
           <div class="col-sm">
-            <p><strong>Esplora le serie</strong></p>
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                <a class="nav-link" href="<?php echo $router->pathFor("HOME"); ?>">Home</a>
+            <h5>Esplora le serie</h5>
+            <ul class="list-unstyled">
+              <li>
+                <a href="<?php echo $router->pathFor("HOME"); ?>">Home</a>
               </li>
               <?php foreach ($leagues as $league) { ?>
-              <li class="nav-item">
-                <a class="nav-link" href="<?php echo $router->pathFor("LEAGUE", ["id" => $league["id"]]); ?>"><?php echo $league["name"]; ?></a>
+              <li>
+                <a href="<?php echo $router->pathFor("LEAGUE", ["id" => $league["id"]]); ?>"><?php echo $league["name"]; ?></a>
               </li>
               <?php } ?>
             </ul>
           </div>
           <div class="col-sm">
-            <p><strong>Interagisci</strong></p>
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                <a class="nav-link" href="<?php echo $router->pathFor("REGISTER"); ?>">Registrati</a>
+            <h5>Interagisci</h5>
+            <ul class="list-unstyled">
+              <li>
+                <a href="<?php echo $router->pathFor("REGISTER"); ?>">Registrati</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="<?php echo $router->pathFor("LOGIN"); ?>">Login</a>
+              <li>
+                <a href="<?php echo $router->pathFor("LOGIN"); ?>">Login</a>
               </li>
             </ul>
           </div>

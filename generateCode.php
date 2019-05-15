@@ -7,10 +7,13 @@ $APP_DIRECTORY = "BGame";
 
 $config_all = parse_ini_file(__DIR__ . '../generateCode_config.ini', true, INI_SCANNER_RAW);
 $models_pos = array_search('::MODELS::', array_keys($config_all));
+$services_pos = array_search('::SERVICES::', array_keys($config_all));
 // configurazione controllers
 $config = array_slice($config_all, 0, $models_pos);
 // configurazione models
-$config_models = array_slice($config_all, $models_pos+1);
+$config_models = array_slice($config_all, $models_pos+1, ($services_pos - $models_pos) - 1);
+// configurazione services
+$config_services = array_slice($config_all, $services_pos + 1);
 
 /*
 . routes (entry point)
@@ -132,6 +135,17 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY, 'bootstrap.php', $code);
 // ============================================================================
 //  dependencies.php
 // ============================================================================
+$otherServices = '';
+foreach ($config_services as $service => $service_config) {
+  $service_name = ucfirst($service);
+  $otherServices .= <<<END_OF_CODE
+\$container['$service'] = function(\$c) {
+  return new $MAIN_NAMESPACE_NAME\\$service_name();
+};
+
+END_OF_CODE;
+}
+
 $services_code = <<<END_OF_CODE
 <?php
 
@@ -156,6 +170,8 @@ $services_code = <<<END_OF_CODE
   );
   return \$db;
 };
+
+$otherServices
 END_OF_CODE;
 
 $middleware_factories = longComment("Middleware factories");
@@ -605,6 +621,39 @@ END_OF_CODE;
 create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', 'DB.php', $code);
 
 // ============================================================================
+//  services
+// ============================================================================
+foreach ($config_services as $service => $service_config) {
+  $service_name = ucfirst($service);
+  
+  $custom_content = custom_content(
+    __DIR__ . '/' . $APP_DIRECTORY . '/src/' . $service_name . '.php',
+    <<<END_OF_CODE
+  /* === DO NOT REMOVE THIS COMMENT */
+  
+  // add your public functions here
+  
+  /* === DO NOT REMOVE THIS COMMENT */
+END_OF_CODE
+  );
+
+  $code = <<<END_OF_CODE
+<?php
+namespace $MAIN_NAMESPACE_NAME;
+
+class $service_name {
+  
+  public function __construct() {
+
+  }
+  
+$custom_content
+}
+END_OF_CODE;
+  create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', $service_name . '.php', $code);
+}
+
+// ============================================================================
 //  templates
 // ============================================================================
 /*
@@ -680,7 +729,7 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/partials', 'foo
 $code = <<<END_OF_CODE
 * {margin:0;padding:0;}
 END_OF_CODE;
-create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/css', 'style.css', $code);
+create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/css', 'style.css', $code, false);
 
 // ============================================================================
 //  js
