@@ -1,7 +1,7 @@
 <?php
 namespace BGame\Controller;
 
-class Register_exController {
+class Login_exController {
   private $router;
   private $app;
   
@@ -18,18 +18,26 @@ class Register_exController {
       return $response->withRedirect($this->router->pathFor("ERROR"));
     }
     if ($action["status"] == "success") {
-      return $response->withRedirect($this->router->pathFor("REGISTER_CONFIRM"));
+      return $response->withRedirect($this->router->pathFor("DASHBOARD"));
     }
 
   }
   
   /* === DO NOT REMOVE THIS COMMENT */
-  private function doAction($request, $response, $args) {
+  private function doAction() {
     // create your action here.
-    die("please create the action by editing the /src/Controller/Register_exController.php file");
-    return [
-      "status" => "success"
-    ];
+    $username = $this->post["username"];
+    $password = $this->post["password"];
+    if ($this->app->userExists($username, $password)) {
+      $this->app->setAuthCookie($username, $password);
+      return [
+        "status" => "success"
+      ];
+    } else {
+      return [
+        "status" => "failure"
+      ];      
+    }
   }
   /* === DO NOT REMOVE THIS COMMENT */
 }

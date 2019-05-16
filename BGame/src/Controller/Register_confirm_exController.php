@@ -1,13 +1,13 @@
 <?php
 namespace BGame\Controller;
 
-class Admin_schedule_matchController {
+class Register_confirm_exController {
   private $router;
-  private $admin;
+  private $app;
   
-  public function __construct($router, $admin) {
+  public function __construct($router, $app) {
     $this->router = $router;
-    $this->admin = $admin;
+    $this->app = $app;
   }
   
   public function __invoke($request, $response, $args) {  

@@ -1,12 +1,12 @@
 <?php
 namespace BGame\Model;
 
-class AdminmenuitemsModel {
-  private $router;
+class TeamModel {
+  private $db;
     
   
-  public function __construct($router) {
-    $this->router = $router;
+  public function __construct($db) {
+    $this->db = $db;
   }
   
   /* === DO NOT REMOVE THIS COMMENT */

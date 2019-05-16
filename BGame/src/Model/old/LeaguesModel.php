@@ -11,7 +11,7 @@ class LeaguesModel {
   
   /* === DO NOT REMOVE THIS COMMENT */
   public function get($args) {
-    // retrieve and return requested data here
+    return $this->db->query('SELECT * FROM leagues', []);
   }  
   /* === DO NOT REMOVE THIS COMMENT */
 }

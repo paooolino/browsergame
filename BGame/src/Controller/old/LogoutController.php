@@ -14,12 +14,8 @@ class LogoutController {
   }
   
   /* === DO NOT REMOVE THIS COMMENT */
-  private function doAction($request, $response, $args) {
+  private function doAction() {
     // create your action here.
-    die("please create the action by editing the /src/Controller/LogoutController.php file");
-    return [
-      "status" => "success"
-    ];
   }
   /* === DO NOT REMOVE THIS COMMENT */
 }
