@@ -138,9 +138,17 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY, 'bootstrap.php', $code);
 $otherServices = '';
 foreach ($config_services as $service => $service_config) {
   $service_name = ucfirst($service);
+  $deps = [];
+  if (isset($service_config["deps"])) {
+    $deps = array_map(function($dep) {
+      return '$c->' . $dep;
+    }, sToArr($service_config["deps"]));
+  }
+  $deps = implode(", ", $deps);
+  
   $otherServices .= <<<END_OF_CODE
 \$container['$service'] = function(\$c) {
-  return new $MAIN_NAMESPACE_NAME\\$service_name();
+  return new $MAIN_NAMESPACE_NAME\\$service_name($deps);
 };
 
 END_OF_CODE;
@@ -341,13 +349,13 @@ foreach ($config as $route_name => $route_config) {
   
   if (isset($route_config["method"]) && $route_config["method"] == "post") {
     // look for actions
-    $invoke_content .= '    $action = $this->doAction();' . "\r\n\r\n";
+    $invoke_content .= '    $action = $this->doAction($request, $response, $args);' . "\r\n\r\n";
     
     $action_content = custom_content(
       __DIR__ . '/' . $APP_DIRECTORY . '/src/Controller/' . $filename,
       <<<END_OF_CODE
   /* === DO NOT REMOVE THIS COMMENT */
-  private function doAction() {
+  private function doAction(\$request, \$response, \$args) {
     // create your action here.
     die("please create the action by editing the /src/Controller/$filename file");
     return [
@@ -625,6 +633,18 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', 'DB.php', $code);
 // ============================================================================
 foreach ($config_services as $service => $service_config) {
   $service_name = ucfirst($service);
+  $deps_members = '';
+  $deps_list = '';
+  $deps_assign = '';
+  
+  if (isset($service_config["deps"])) {
+    $deps = array_map("trim", explode(",", $service_config["deps"]));
+    foreach ($deps as $dep) {
+      $deps_members .= "  private \$$dep;\r\n";
+      $deps_assign .= "    \$this->$dep = \$$dep;\r\n";
+    }
+    $deps_list = implode(", ", array_map(function($d) { return '$' . $d; }, $deps));
+  }
   
   $custom_content = custom_content(
     __DIR__ . '/' . $APP_DIRECTORY . '/src/' . $service_name . '.php',
@@ -642,10 +662,9 @@ END_OF_CODE
 namespace $MAIN_NAMESPACE_NAME;
 
 class $service_name {
-  
-  public function __construct() {
-
-  }
+$deps_members    
+  public function __construct($deps_list) {
+$deps_assign  }
   
 $custom_content
 }
