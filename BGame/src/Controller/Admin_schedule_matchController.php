@@ -12,10 +12,18 @@ class Admin_schedule_matchController {
   
   public function __invoke($request, $response, $args) {  
 
-    return $this->view->render($response, '.php', [
-      "templateUrl" => $this->app->templateUrl,
-    ]);
+    $response = $this->doAction($request, $response, $args);
+
+
   }
   
-
+  /* === DO NOT REMOVE THIS COMMENT */
+  private function doAction($request, $response, $args) {
+    // create your action here.
+    die("please create the action by editing the /src/Controller/Admin_schedule_matchController.php file");
+    return [
+      "status" => "success"
+    ];
+  }
+  /* === DO NOT REMOVE THIS COMMENT */
 }

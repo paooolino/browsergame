@@ -347,9 +347,9 @@ foreach ($config as $route_name => $route_config) {
     }
   }
   
-  if (isset($route_config["method"]) && $route_config["method"] == "post") {
+  if (!isset($route_config["template"])) {
     // look for actions
-    $invoke_content .= '    $action = $this->doAction($request, $response, $args);' . "\r\n\r\n";
+    $invoke_content .= '    $response = $this->doAction($request, $response, $args);' . "\r\n\r\n";
     
     $action_content = custom_content(
       __DIR__ . '/' . $APP_DIRECTORY . '/src/Controller/' . $filename,

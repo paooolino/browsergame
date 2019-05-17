@@ -12,10 +12,24 @@ class Register_confirm_exController {
   
   public function __invoke($request, $response, $args) {  
 
-    return $this->view->render($response, '.php', [
-      "templateUrl" => $this->app->templateUrl,
-    ]);
+    $response = $this->doAction($request, $response, $args);
+
+    if ($action["status"] == "failure") {
+      return $response->withRedirect($this->router->pathFor("MESSAGE"));
+    }
+    if ($action["status"] == "success") {
+      return $response->withRedirect($this->router->pathFor("MESSAGE"));
+    }
+
   }
   
-
+  /* === DO NOT REMOVE THIS COMMENT */
+  private function doAction($request, $response, $args) {
+    // create your action here.
+    die("please create the action by editing the /src/Controller/Register_confirm_exController.php file");
+    return [
+      "status" => "success"
+    ];
+  }
+  /* === DO NOT REMOVE THIS COMMENT */
 }
