@@ -13,7 +13,7 @@ class LogoutController {
   
   public function __invoke($request, $response, $args) {  
 
-    $action = $this->doAction($request, $response, $args);
+    $response = $this->doAction($request, $response, $args);
 
 
   }

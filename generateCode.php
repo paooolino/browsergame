@@ -359,7 +359,7 @@ foreach ($config as $route_name => $route_config) {
 END_OF_CODE;
 
     // look for actions
-    $invoke_content .= '    $action = $this->doAction($request, $response, $args);' . "\r\n\r\n";
+    $invoke_content .= '    $response = $this->doAction($request, $response, $args);' . "\r\n\r\n";
     
     $action_content = custom_content(
       __DIR__ . '/' . $APP_DIRECTORY . '/src/Controller/' . $filename,

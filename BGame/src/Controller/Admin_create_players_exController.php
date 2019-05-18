@@ -17,7 +17,7 @@ class Admin_create_players_exController {
   
   public function __invoke($request, $response, $args) {  
 
-    $action = $this->doAction($request, $response, $args);
+    $response = $this->doAction($request, $response, $args);
 
     if ($action["status"] == "failure") {
       return $response->withRedirect($this->router->pathFor("ADMIN_MESSAGE"));

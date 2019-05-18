@@ -17,7 +17,11 @@ class Register_confirm_exController {
   
   public function __invoke($request, $response, $args) {  
 
+<<<<<<< HEAD
     $action = $this->doAction($request, $response, $args);
+=======
+    $response = $this->doAction($request, $response, $args);
+>>>>>>> 7b7a3c58dccbc615a22d3888355152a84cf2809e
 
     if ($action["status"] == "failure") {
       return $response->withRedirect($this->router->pathFor("MESSAGE"));
