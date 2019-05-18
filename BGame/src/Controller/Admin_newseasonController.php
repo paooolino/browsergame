@@ -1,4 +1,9 @@
 <?php
+/**
+ *  Please add a [desc] attribute to the ADMIN_NEWSEASON route.
+ *
+ *  @status 0 
+ */
 namespace BGame\Controller;
 
 class Admin_newseasonController {

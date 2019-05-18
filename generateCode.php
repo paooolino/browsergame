@@ -321,6 +321,7 @@ foreach ($config as $route_name => $route_config) {
   $action_content = '';
   $invoke_content = '';
   $models_vars = '';
+  $file_descriptor = '';
   
   if (isset($route_config["deps"])) {
     $deps = array_map("trim", explode(",", $route_config["deps"]));
@@ -347,7 +348,16 @@ foreach ($config as $route_name => $route_config) {
     }
   }
   
-  if (isset($route_config["method"]) && $route_config["method"] == "post") {
+  if (!isset($route_config["template"])) {
+    $desc = isset($route_config["desc"]) ? $route_config["desc"] : "Please add a [desc] attribute to the $route_name route."; 
+    $file_descriptor = <<<END_OF_CODE
+/**
+ *  $desc
+ *
+ *  @status 0 
+ */
+END_OF_CODE;
+
     // look for actions
     $invoke_content .= '    $action = $this->doAction($request, $response, $args);' . "\r\n\r\n";
     
@@ -386,6 +396,7 @@ END_OF_CODE
   
   $code = <<<END_OF_CODE
 <?php
+$file_descriptor
 namespace $MAIN_NAMESPACE_NAME\Controller;
 
 class $classname {

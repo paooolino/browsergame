@@ -63,8 +63,8 @@ $container['BGame\Controller\LoginController'] = function ($c) {
   return new BGame\Controller\LoginController($c->view, $c->app, $c->LeaguesModel);
 };
 
-$container['BGame\Controller\Login_exController'] = function ($c) {
-  return new BGame\Controller\Login_exController($c->router, $c->app);
+$container['BGame\Controller\Login_actionController'] = function ($c) {
+  return new BGame\Controller\Login_actionController($c->router, $c->app);
 };
 
 $container['BGame\Controller\RegisterController'] = function ($c) {
@@ -109,10 +109,6 @@ $container['BGame\Controller\Admin_create_players_exController'] = function ($c)
 
 $container['BGame\Controller\Admin_schedule_matchController'] = function ($c) {
   return new BGame\Controller\Admin_schedule_matchController($c->router, $c->admin);
-};
-
-$container['BGame\Controller\Admin_schedule_competitionController'] = function ($c) {
-  return new BGame\Controller\Admin_schedule_competitionController($c->view, $c->admin, $c->LeaguesModel);
 };
 
 $container['BGame\Controller\Admin_tableController'] = function ($c) {

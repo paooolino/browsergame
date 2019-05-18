@@ -1,4 +1,5 @@
 <?php
+
 namespace BGame\Controller;
 
 class DashboardController {

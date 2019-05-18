@@ -1,4 +1,9 @@
 <?php
+/**
+ *  Inserisce l'utente nel database, con stato inattivo. Invia la mail di registrazione.
+ *
+ *  @status 0 
+ */
 namespace BGame\Controller;
 
 class Register_exController {

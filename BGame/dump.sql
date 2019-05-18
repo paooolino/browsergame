@@ -3,7 +3,7 @@
 -- Host: localhost	Database: bgame
 -- ------------------------------------------------------
 -- Server version 	5.7.19
--- Date: Thu, 16 May 2019 13:07:06 +0000
+-- Date: Sat, 18 May 2019 07:52:11 +0000
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -25,10 +25,9 @@ DROP TABLE IF EXISTS `competitions`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `competitions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `nome` varchar(50) NOT NULL,
-  `year` int(11) NOT NULL DEFAULT '0',
+  `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,12 +37,11 @@ CREATE TABLE `competitions` (
 LOCK TABLES `competitions` WRITE;
 /*!40000 ALTER TABLE `competitions` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `competitions` VALUES (1,'Campionato italiano',0);
 /*!40000 ALTER TABLE `competitions` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
 
--- Dumped table `competitions` with 1 row(s)
+-- Dumped table `competitions` with 0 row(s)
 --
 
 --
@@ -124,7 +122,7 @@ CREATE TABLE `players` (
   `ability` int(11) DEFAULT '0',
   `form` int(11) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -134,12 +132,12 @@ CREATE TABLE `players` (
 LOCK TABLES `players` WRITE;
 /*!40000 ALTER TABLE `players` DISABLE KEYS */;
 SET autocommit=0;
-INSERT INTO `players` VALUES (1,1,'Chiellini','Giorgio',16,'D',0,0),(2,1,'Ronaldo','Cristiano',16,'A',0,0),(3,NULL,'Biagi\r\n','Pasquale\r\n',41,'D',35,47),(4,NULL,'Bevilacqua\r\n','Aristeo\r\n',23,'D',60,100);
+INSERT INTO `players` VALUES (1,1,'Chiellini','Giorgio',16,'D',0,0),(2,1,'Ronaldo','Cristiano',16,'A',0,0),(3,NULL,'Biagi\r\n','Pasquale\r\n',41,'D',35,47),(4,NULL,'Bevilacqua\r\n','Aristeo\r\n',23,'D',60,100),(5,NULL,'Barbero\r\n','Diodoro\r\n',25,'D',48,79),(6,NULL,'Lazzarini\r\n','Nicezio\r\n',41,'M',55,76),(7,NULL,'Rota\r\n','Euseo\r\n',35,'P',4,53),(8,NULL,'Perez\r\n','Colombano\r\n',21,'M',38,62),(9,NULL,'Ronchi\r\n','Napoleone\r\n',23,'D',34,1),(10,NULL,'Perini\r\n','Illidio\r\n',36,'M',64,54),(11,NULL,'Giunta\r\n','Gerasimo\r\n',18,'P',80,52),(12,NULL,'Cabras\r\n','Demostene\r\n',32,'A',53,91);
 /*!40000 ALTER TABLE `players` ENABLE KEYS */;
 UNLOCK TABLES;
 COMMIT;
 
--- Dumped table `players` with 4 row(s)
+-- Dumped table `players` with 12 row(s)
 --
 
 --
@@ -217,4 +215,4 @@ COMMIT;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on: Thu, 16 May 2019 13:07:06 +0000
+-- Dump completed on: Sat, 18 May 2019 07:52:11 +0000

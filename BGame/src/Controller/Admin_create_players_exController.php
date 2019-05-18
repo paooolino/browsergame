@@ -1,4 +1,9 @@
 <?php
+/**
+ *  Crea il numero di nuovi giocatori passato dal form.
+ *
+ *  @status 0 
+ */
 namespace BGame\Controller;
 
 class Admin_create_players_exController {

@@ -24,20 +24,12 @@ class Login_exController {
   }
   
   /* === DO NOT REMOVE THIS COMMENT */
-  private function doAction() {
+  private function doAction($request, $response, $args) {
     // create your action here.
-    $username = $this->post["username"];
-    $password = $this->post["password"];
-    if ($this->app->userExists($username, $password)) {
-      $this->app->setAuthCookie($username, $password);
-      return [
-        "status" => "success"
-      ];
-    } else {
-      return [
-        "status" => "failure"
-      ];      
-    }
+    die("please create the action by editing the /src/Controller/Login_exController.php file");
+    return [
+      "status" => "success"
+    ];
   }
   /* === DO NOT REMOVE THIS COMMENT */
 }
