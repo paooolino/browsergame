@@ -2,10 +2,10 @@
 require __DIR__ . '/vendor/autoload.php';
 use Ifsnop\Mysqldump as IMysqldump;
 
-$MAIN_NAMESPACE_NAME = "BGame";
-$APP_DIRECTORY = "BGame";
+$APP_DIRECTORY = "UserDemo";
+$MAIN_NAMESPACE_NAME = $APP_DIRECTORY;
 
-$config_all = parse_ini_file(__DIR__ . '../generateCode_config.ini', true, INI_SCANNER_RAW);
+$config_all = parse_ini_file(__DIR__ . '../' . $APP_DIRECTORY . '.ini', true, INI_SCANNER_RAW);
 $models_pos = array_search('::MODELS::', array_keys($config_all));
 $services_pos = array_search('::SERVICES::', array_keys($config_all));
 // configurazione controllers
@@ -37,6 +37,9 @@ function create_file($dir, $filename, $code, $force=true) {
     mkdir($dir, 0777, true);  
   
   $file = $dir . '/' . $filename;
+  
+  $code = preserve_developer_code($file, $code);
+  
   if ($force || !file_exists($file))
     file_put_contents($file, $code);
 }
@@ -65,7 +68,18 @@ function compile_template($src, $dest, $filename, $mainTemplate=false) {
     $tpl_dest_dir = __DIR__ . '/' . $APP_DIRECTORY . '/templates/default/partials'; 
     $subfilename = $tagname . '.php';
     if (!file_exists($tpl_source_dir . '/' . $subfilename)) {
-      $code = 'Please edit the template source file in /templates/default/src/partials/' . $subfilename;
+      $code = <<<END_OF_CODE
+<?php
+/* === DEVELOPER BEGIN */
+/**
+ *  @desc [Please add a description here for this sub-template]
+ *
+ *  @status 0 
+ */
+/* === DEVELOPER END */
+Please edit the template source file in /templates/default/src/partials/' . $subfilename
+?>
+END_OF_CODE;
       create_file($tpl_source_dir, $subfilename, $code);
     }
     compile_template($tpl_source_dir, $tpl_dest_dir, $subfilename);
@@ -81,20 +95,37 @@ function compile_template($src, $dest, $filename, $mainTemplate=false) {
   create_file($dest, $filename, $tpl);
 }
 
-function custom_content($file, $default_custom_content) {
-  $custom_content = '';
-  if (file_exists($file)) {
-    $yetcode = file_get_contents($file);
-    $matches = [];
-    preg_match("/\/\* === DO NOT REMOVE THIS COMMENT \*\/(.*?)\/* === DO NOT REMOVE THIS COMMENT \*\//s", $yetcode, $matches);
-    if (count($matches) > 0) {
-      $custom_content = "  " . $matches[0];
+function preserve_developer_code($file, $code) {
+  // se il file non esiste mantengo il codice così com'è
+  if (!file_exists($file))
+    return $code;
+  
+  // trovo i pezzi di codice da preservare dal file originale
+  $file_content = file_get_contents($file);
+  $start = ("\/\* === DEVELOPER BEGIN \*\/");
+  $end = ("\/\* === DEVELOPER END \*\/");
+  $preserve_matches = [];
+  preg_match_all("/$start(.*?)$end/s", $file_content, $matches);
+  
+  if (count($matches[0]) > 0) {
+    // metto dei segnaposto nel nuovo codice
+    $code = preg_replace("/$start(.*?)$end/s", "{{DEVELOPER_CODE}}", $code);
+    
+    // sostituisco i segnaposto con il codice da preservare
+    foreach ($matches[0] as $match) {
+      $code = replace_first_occurrence("{{DEVELOPER_CODE}}", $match, $code);
     }
   }
-  if ($custom_content == "") { 
-    $custom_content = $default_custom_content;
+  
+  return $code;
+}
+
+function replace_first_occurrence($search, $replace, $string) {
+  $pos = strpos($string, $search);
+  if ($pos !== false) {
+    $string = substr_replace($string, $replace, $pos, strlen($search));
   }
-  return $custom_content;
+  return $string;
 }
 
 function move_in_old($dir, $files) {
@@ -187,10 +218,6 @@ $middleware_factories .= <<<END_OF_CODE
 \$container['$MAIN_NAMESPACE_NAME\Middleware\AppInit'] = function (\$c) {
   return new $MAIN_NAMESPACE_NAME\Middleware\AppInit(\$c->app);
 };
-
-\$container['$MAIN_NAMESPACE_NAME\Middleware\Auth'] = function (\$c) {
-  return new $MAIN_NAMESPACE_NAME\Middleware\Auth(\$c->app);
-};
 END_OF_CODE;
 
 $controller_factories = longComment("Controller factories");
@@ -210,6 +237,13 @@ foreach ($config as $route_name => $route_config) {
     }, explode(",", $route_config["models"])));
   }
 
+  // se c'è un template, aggiunge automaticamente la dipendenza dalla view
+  // se c'è la view passo anche app, serve per recuperare la templateUrl
+  if (isset($route_config["template"])) {
+    $deps[] = '$c->view';
+    $deps[] = '$c->app';
+  }
+  
   $deps = implode(", ", $deps);
   
     $controller_factories .= <<<END_OF_CODE
@@ -256,7 +290,6 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY, 'dependencies.php', $code);
 $code = <<<END_OF_CODE
 <?php
   \$app->add('$MAIN_NAMESPACE_NAME\Middleware\AppInit');
-  \$app->add('$MAIN_NAMESPACE_NAME\Middleware\Auth');
 END_OF_CODE;
 create_file(__DIR__ . '/' . $APP_DIRECTORY, 'middleware.php', $code);
 
@@ -323,6 +356,7 @@ foreach ($config as $route_name => $route_config) {
   $models_vars = '';
   $file_descriptor = '';
   
+  $deps = [];
   if (isset($route_config["deps"])) {
     $deps = array_map("trim", explode(",", $route_config["deps"]));
     if (isset($route_config["models"])) {
@@ -331,13 +365,18 @@ foreach ($config as $route_name => $route_config) {
         return ucfirst(trim($model)) . "Model";
       }, explode(",", $route_config["models"])));
     }
-    foreach ($deps as $dep) {
-      $deps_members .= "  private \$$dep;\r\n";
-      $deps_assign .= "    \$this->$dep = \$$dep;\r\n";
-    }
-    $deps_list = implode(", ", array_map(function($d) { return '$' . $d; }, $deps));
-    //$deps_list_topass = implode(", ", array_map(function($d) { return '$this->' . $d; }, $deps));
   }
+  // se c'è un template, aggiunge automaticamente la dipendenza dalla view
+  // se c'è la view passo anche app, serve per recuperare la templateUrl
+  if (isset($route_config["template"])) {
+    $deps[] = "view";
+    $deps[] = "app";
+  }
+  foreach ($deps as $dep) {
+    $deps_members .= "  private \$$dep;\r\n";
+    $deps_assign .= "    \$this->$dep = \$$dep;\r\n";
+  }
+  $deps_list = implode(", ", array_map(function($d) { return '$' . $d; }, $deps));
   
   if (isset($route_config["models"])) {
     $models = array_map("trim", explode(",", $route_config["models"]));
@@ -351,20 +390,20 @@ foreach ($config as $route_name => $route_config) {
   if (!isset($route_config["template"])) {
     $desc = isset($route_config["desc"]) ? $route_config["desc"] : "Please add a [desc] attribute to the $route_name route."; 
     $file_descriptor = <<<END_OF_CODE
+/* === DEVELOPER BEGIN */
 /**
- *  $desc
+ *  @desc $desc
  *
  *  @status 0 
  */
+/* === DEVELOPER END */
 END_OF_CODE;
 
     // look for actions
     $invoke_content .= '    $response = $this->doAction($request, $response, $args);' . "\r\n\r\n";
     
-    $action_content = custom_content(
-      __DIR__ . '/' . $APP_DIRECTORY . '/src/Controller/' . $filename,
-      <<<END_OF_CODE
-  /* === DO NOT REMOVE THIS COMMENT */
+    $action_content = <<<END_OF_CODE
+  /* === DEVELOPER BEGIN */
   private function doAction(\$request, \$response, \$args) {
     // create your action here.
     die("please create the action by editing the /src/Controller/$filename file");
@@ -372,9 +411,8 @@ END_OF_CODE;
       "status" => "success"
     ];
   }
-  /* === DO NOT REMOVE THIS COMMENT */
-END_OF_CODE
-    );
+  /* === DEVELOPER END */
+END_OF_CODE;
     
     if (isset($route_config["failure"])) {
       $invoke_content .= '    if ($action["status"] == "failure") {' . "\r\n"; 
@@ -510,19 +548,28 @@ foreach ($config_models as $model_name => $model_config) {
     $deps_list = implode(", ", array_map(function($d) { return '$' . $d; }, $deps));
   }
   
-  $custom_content = custom_content(
-    __DIR__ . '/' . $APP_DIRECTORY . '/src/Model/' . $filename,
-    <<<END_OF_CODE
-  /* === DO NOT REMOVE THIS COMMENT */
+  $desc = isset($model_config["desc"]) ? $model_config["desc"] : "Please add a [desc] attribute to the $model_name model."; 
+  $file_descriptor = <<<END_OF_CODE
+/* === DEVELOPER BEGIN */
+/**
+ *  @desc $desc
+ *
+ *  @status 0 
+ */
+/* === DEVELOPER END */
+END_OF_CODE;
+  
+  $custom_content = <<<END_OF_CODE
+  /* === DEVELOPER BEGIN */
   public function get(\$args) {
     // retrieve and return requested data here
   }  
-  /* === DO NOT REMOVE THIS COMMENT */
-END_OF_CODE
-      );
+  /* === DEVELOPER END */
+END_OF_CODE;
 
       $code = <<<END_OF_CODE
 <?php
+$file_descriptor
 namespace $MAIN_NAMESPACE_NAME\Model;
 
 class $classname {
@@ -540,47 +587,15 @@ END_OF_CODE;
 move_in_old(__DIR__ . '/' . $APP_DIRECTORY . '/src/Model', array_diff($existents, $models));
 
 // ============================================================================
-//  actions
-// ============================================================================
-foreach ($config as $route_name => $route_config) {
-  if (isset($route_config["actions"])) {
-    $actions_arr = array_map("trim", explode(',', $route_config["actions"]));
-    foreach ($actions_arr as $action) {
-      $classname = ucfirst(strtolower($action)) . 'Action';
-      $filename = $classname . '.php';
-      $code = <<<END_OF_CODE
-<?php
-namespace $MAIN_NAMESPACE_NAME\Action;
-
-class $classname {
-  
-  public function __construct() {
-    //
-  }
-  
-  public function __invoke() {
-    //
-  }
-}
-END_OF_CODE;
-      create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src/Action', $filename, $code);
-    }
-  }
-}
-
-// ============================================================================
 //  App.php
 // ============================================================================
-$custom_content = custom_content(
-  __DIR__ . '/' . $APP_DIRECTORY . '/src/App.php',
-  <<<END_OF_CODE
-  /* === DO NOT REMOVE THIS COMMENT */
+$custom_content = <<<END_OF_CODE
+  /* === DEVELOPER BEGIN */
   
   // add your public functions here
   
-  /* === DO NOT REMOVE THIS COMMENT */
-END_OF_CODE
-);
+  /* === DEVELOPER END */
+END_OF_CODE;
 
 $code = <<<END_OF_CODE
 <?php
@@ -657,19 +672,25 @@ foreach ($config_services as $service => $service_config) {
     $deps_list = implode(", ", array_map(function($d) { return '$' . $d; }, $deps));
   }
   
-  $custom_content = custom_content(
-    __DIR__ . '/' . $APP_DIRECTORY . '/src/' . $service_name . '.php',
-    <<<END_OF_CODE
-  /* === DO NOT REMOVE THIS COMMENT */
+  $desc = isset($route_config["desc"]) ? $route_config["desc"] : "Please add a [desc] attribute to the $service service."; 
+    
+  $custom_content = <<<END_OF_CODE
+  /* === DEVELOPER BEGIN */
   
   // add your public functions here
   
-  /* === DO NOT REMOVE THIS COMMENT */
-END_OF_CODE
-  );
+  /* === DEVELOPER END */
+END_OF_CODE;
 
   $code = <<<END_OF_CODE
 <?php
+/* === DEVELOPER BEGIN */
+/**
+ *  @desc $desc
+ *
+ *  @status 0 
+ */
+/* === DEVELOPER END */
 namespace $MAIN_NAMESPACE_NAME;
 
 class $service_name {
@@ -686,72 +707,30 @@ END_OF_CODE;
 // ============================================================================
 //  templates
 // ============================================================================
-/*
-// THIS IS THE OLD SOLUTION
-foreach ($config as $route_name => $route_config) {
-  if (isset($route_config["template"])) {
-    $filename = $route_config["template"] . '.php';
-    $widgets = '';
-    if (isset($route_config["widgets"])) {
-      $widgets_arr = array_map("trim", explode(',', $route_config["widgets"]));
-      $widgets = implode("\r\n", array_map(function($item) {
-        return '<?php require __DIR__ . \'/widgets/' . $item . '.php\'; ?>';
-      }, $widgets_arr));
-    }
-    $code = <<<END_OF_CODE
-<?php require __DIR__ . '/partials/header.php'; ?>
-
-$widgets
-
-<?php require __DIR__ . '/partials/footer.php'; ?>
-END_OF_CODE;
-    create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default', $filename, $code);
-  }
-}
-*/
 foreach ($config as $route_name => $route_config) {
   if (isset($route_config["template"])) {
     $tpl_source_dir = __DIR__ . '/' . $APP_DIRECTORY . '/templates/default/src'; 
     $tpl_dest_dir = __DIR__ . '/' . $APP_DIRECTORY . '/templates/default'; 
     $filename = $route_config["template"] . '.php';
     if (!file_exists($tpl_source_dir . '/' . $filename)) {
-      $code = 'Please edit the template source file in /templates/default/src/' . $filename;
+      $desc = isset($route_config["desc"]) ? $route_config["desc"] : "Please add a [desc] attribute to the $route_name route."; 
+      $code = <<<END_OF_CODE
+<?php
+/* === DEVELOPER BEGIN */
+/**
+ *  @desc $desc
+ *
+ *  @status 0 
+ */
+/* === DEVELOPER END */
+?>
+Please edit the template source file in /templates/default/src/' . $filename
+END_OF_CODE;
       create_file($tpl_source_dir, $filename, $code);
     }
     compile_template($tpl_source_dir, $tpl_dest_dir, $filename, true);
   }
 }
-
-// ============================================================================
-//  partials: header
-// ============================================================================
-/*
-// THIS IS THE OLD SOLUTION
-$code = <<<END_OF_CODE
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <title><?php echo \$seo_title; ?></title>
-  <link rel="stylesheet" type="text/css" href="<?php echo \$templateUrl; ?>/css/style.css">
-</head>
-<body>
-END_OF_CODE;
-create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/partials', 'header.php', $code);
-*/
-
-// ============================================================================
-//  partials: footer
-// ============================================================================
-/*
-// THIS IS THE OLD SOLUTION
-$code = <<<END_OF_CODE
-  <script src="<?php echo \$templateUrl; ?>/js/script.js"></script>
-</body>
-</html>
-END_OF_CODE;
-create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/partials', 'footer.php', $code);
-*/
 
 // ============================================================================
 //  css
@@ -766,6 +745,13 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/css', 'style.cs
 // ============================================================================
 $code = '';
 create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/js', 'index.js', $code);
+
+// ============================================================================
+//  copy the developer assistant
+// ============================================================================
+$source = __DIR__ . "/developer_assistant.php";
+$dest = __DIR__ . '/' . $APP_DIRECTORY . "/developer_assistant.php";
+copy($source, $dest);
 
 // ============================================================================
 //  database dump

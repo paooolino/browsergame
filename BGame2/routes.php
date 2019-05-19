@@ -1,0 +1,24 @@
+<?php
+$app->get('/', 'BGame2\Controller\HomeController')->setName('HOME');
+$app->get('/league/{id}', 'BGame2\Controller\LeagueController')->setName('LEAGUE');
+$app->get('/team/{id}', 'BGame2\Controller\TeamController')->setName('TEAM');
+$app->get('/player/{id}', 'BGame2\Controller\PlayerController')->setName('PLAYER');
+$app->get('/match/{id}', 'BGame2\Controller\MatchController')->setName('MATCH');
+$app->get('/login', 'BGame2\Controller\LoginController')->setName('LOGIN');
+$app->post('/login', 'BGame2\Controller\Login_actionController')->setName('LOGIN_ACTION');
+$app->get('/register', 'BGame2\Controller\RegisterController')->setName('REGISTER');
+$app->post('/register', 'BGame2\Controller\Register_exController')->setName('REGISTER_EX');
+$app->get('/register-confirm-ex', 'BGame2\Controller\Register_confirm_exController')->setName('REGISTER_CONFIRM_EX');
+$app->get('/dashboard', 'BGame2\Controller\DashboardController')->setName('DASHBOARD');
+$app->post('/logout', 'BGame2\Controller\LogoutController')->setName('LOGOUT');
+$app->get('/admin', 'BGame2\Controller\AdminController')->setName('ADMIN');
+$app->get('/admin/message', 'BGame2\Controller\Admin_messageController')->setName('ADMIN_MESSAGE');
+$app->post('/admin/newseason', 'BGame2\Controller\Admin_newseasonController')->setName('ADMIN_NEWSEASON');
+$app->get('/admin/create-players', 'BGame2\Controller\Admin_create_playersController')->setName('ADMIN_CREATE_PLAYERS');
+$app->post('/admin/create-players', 'BGame2\Controller\Admin_create_players_exController')->setName('ADMIN_CREATE_PLAYERS_EX');
+$app->get('/admin/schedule-match-ex', 'BGame2\Controller\Admin_schedule_matchController')->setName('ADMIN_SCHEDULE_MATCH');
+$app->get('/admin/{table}', 'BGame2\Controller\Admin_tableController')->setName('ADMIN_TABLE');
+$app->get('/admin/{table}/{id}', 'BGame2\Controller\Admin_recordController')->setName('ADMIN_RECORD');
+$app->get('/admin/{table}/new', 'BGame2\Controller\Admin_record_newController')->setName('ADMIN_RECORD_NEW');
+$app->get('/admin/{table}/edit/{id}', 'BGame2\Controller\Admin_record_editController')->setName('ADMIN_RECORD_EDIT');
+$app->get('/admin/{table}/delete/{id}', 'BGame2\Controller\Admin_record_deleteController')->setName('ADMIN_RECORD_DELETE');

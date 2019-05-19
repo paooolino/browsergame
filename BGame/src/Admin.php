@@ -1,4 +1,9 @@
 <?php
+/* === DEVELOPER BEGIN */
+  
+  // add your public functions here
+  
+  /* === DEVELOPER END */
 namespace BGame;
 
 class Admin {
@@ -8,32 +13,5 @@ class Admin {
     $this->db = $db;
   }
   
-  /* === DO NOT REMOVE THIS COMMENT */
-  
-  // add your public functions here
-  public function createPlayer($opts) {
-    $query = "
-      INSERT INTO players (
-        name,
-        surname,
-        age,
-        role,
-        ability,
-        form
-      ) VALUES (
-        ?, ?, ?, ?, ?, ?
-      )
-    ";
-    $data = [
-      $opts["name"],
-      $opts["surname"],
-      $opts["age"],
-      $opts["role"],
-      $opts["ability"],
-      $opts["form"]
-    ];
-    return $this->db->query($query, $data);
-  }
-  
-  /* === DO NOT REMOVE THIS COMMENT */
+  {{DEVELOPER_CODE}}
 }

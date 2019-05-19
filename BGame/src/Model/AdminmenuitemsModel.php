@@ -1,4 +1,9 @@
 <?php
+/* === DEVELOPER BEGIN */
+  public function get($args) {
+    // retrieve and return requested data here
+  }  
+  /* === DEVELOPER END */
 namespace BGame\Model;
 
 class AdminmenuitemsModel {
@@ -9,9 +14,5 @@ class AdminmenuitemsModel {
     $this->router = $router;
   }
   
-  /* === DO NOT REMOVE THIS COMMENT */
-  public function get($args) {
-    // retrieve and return requested data here
-  }  
-  /* === DO NOT REMOVE THIS COMMENT */
+  {{DEVELOPER_CODE}}
 }

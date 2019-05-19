@@ -1,2 +1,2 @@
 <?php
-  require __DIR__ . '/BGame/bootstrap.php';
+  require __DIR__ . '/UserDemo/bootstrap.php';

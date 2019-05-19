@@ -1,9 +1,11 @@
 <?php
+/* === DEVELOPER BEGIN */
 /**
  *  Inserisce il match nel database.
  *
  *  @status 0 
  */
+/* === DEVELOPER END */
 namespace BGame\Controller;
 
 class Admin_schedule_matchController {
@@ -19,9 +21,10 @@ class Admin_schedule_matchController {
 
     $response = $this->doAction($request, $response, $args);
 
+
   }
   
-  /* === DO NOT REMOVE THIS COMMENT */
+  /* === DEVELOPER BEGIN */
   private function doAction($request, $response, $args) {
     // create your action here.
     die("please create the action by editing the /src/Controller/Admin_schedule_matchController.php file");
@@ -29,5 +32,5 @@ class Admin_schedule_matchController {
       "status" => "success"
     ];
   }
-  /* === DO NOT REMOVE THIS COMMENT */
+  /* === DEVELOPER END */
 }

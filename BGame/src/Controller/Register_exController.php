@@ -1,9 +1,11 @@
 <?php
+/* === DEVELOPER BEGIN */
 /**
  *  Inserisce l'utente nel database, con stato inattivo. Invia la mail di registrazione.
  *
  *  @status 0 
  */
+/* === DEVELOPER END */
 namespace BGame\Controller;
 
 class Register_exController {
@@ -28,7 +30,7 @@ class Register_exController {
 
   }
   
-  /* === DO NOT REMOVE THIS COMMENT */
+  /* === DEVELOPER BEGIN */
   private function doAction($request, $response, $args) {
     // create your action here.
     die("please create the action by editing the /src/Controller/Register_exController.php file");
@@ -36,5 +38,5 @@ class Register_exController {
       "status" => "success"
     ];
   }
-  /* === DO NOT REMOVE THIS COMMENT */
+  /* === DEVELOPER END */
 }

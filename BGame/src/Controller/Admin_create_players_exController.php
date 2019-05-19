@@ -1,9 +1,11 @@
 <?php
+/* === DEVELOPER BEGIN */
 /**
  *  Crea il numero di nuovi giocatori passato dal form.
  *
  *  @status 0 
  */
+/* === DEVELOPER END */
 namespace BGame\Controller;
 
 class Admin_create_players_exController {
@@ -28,7 +30,7 @@ class Admin_create_players_exController {
 
   }
   
-  /* === DO NOT REMOVE THIS COMMENT */
+  /* === DEVELOPER BEGIN */
   private function doAction($request, $response, $args) {
     // create your action here.
     die("please create the action by editing the /src/Controller/Admin_create_players_exController.php file");
@@ -36,5 +38,5 @@ class Admin_create_players_exController {
       "status" => "success"
     ];
   }
-  /* === DO NOT REMOVE THIS COMMENT */
+  /* === DEVELOPER END */
 }

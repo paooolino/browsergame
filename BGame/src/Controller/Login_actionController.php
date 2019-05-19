@@ -1,9 +1,11 @@
 <?php
+/* === DEVELOPER BEGIN */
 /**
  *  Controlla se le credenziali sono corrette. Una eccezione intercetterà il caso di un utente "admin" e redirigerà alla dashboard admin.
  *
  *  @status 0 
  */
+/* === DEVELOPER END */
 namespace BGame\Controller;
 
 class Login_actionController {
@@ -28,7 +30,7 @@ class Login_actionController {
 
   }
   
-  /* === DO NOT REMOVE THIS COMMENT */
+  /* === DEVELOPER BEGIN */
   private function doAction($request, $response, $args) {
     // create your action here.
     die("please create the action by editing the /src/Controller/Login_actionController.php file");
@@ -36,5 +38,5 @@ class Login_actionController {
       "status" => "success"
     ];
   }
-  /* === DO NOT REMOVE THIS COMMENT */
+  /* === DEVELOPER END */
 }

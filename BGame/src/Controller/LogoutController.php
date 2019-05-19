@@ -1,9 +1,11 @@
 <?php
+/* === DEVELOPER BEGIN */
 /**
  *  Please add a [desc] attribute to the LOGOUT route.
  *
  *  @status 0 
  */
+/* === DEVELOPER END */
 namespace BGame\Controller;
 
 class LogoutController {
@@ -18,7 +20,7 @@ class LogoutController {
 
   }
   
-  /* === DO NOT REMOVE THIS COMMENT */
+  /* === DEVELOPER BEGIN */
   private function doAction($request, $response, $args) {
     // create your action here.
     die("please create the action by editing the /src/Controller/LogoutController.php file");
@@ -26,5 +28,5 @@ class LogoutController {
       "status" => "success"
     ];
   }
-  /* === DO NOT REMOVE THIS COMMENT */
+  /* === DEVELOPER END */
 }
