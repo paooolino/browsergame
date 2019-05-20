@@ -1,5 +1,9 @@
 <?php
-
+/* === DEVELOPER BEGIN */
+/**
+ *  @status 0 
+ */
+/* === DEVELOPER END */
 namespace UserDemo\Controller;
 
 class MessageController {
@@ -14,6 +18,7 @@ class MessageController {
   }
   
   public function __invoke($request, $response, $args) {  
+    $model = $this->getdata_messageModel($request, $args);
 
     return $this->view->render($response, 'message.php', [
       "templateUrl" => $this->app->templateUrl,
@@ -21,5 +26,10 @@ class MessageController {
     ]);
   }
   
-
+  /* === DEVELOPER BEGIN */
+  private function getdata_messageModel($request, $args) {
+    // call the pure model to retrieve data
+    //return $this->messageModel(); 
+  }
+  /* === DEVELOPER END */
 }

@@ -39,13 +39,7 @@ class Login_actionController {
     
     $user = $this->User_by_username_passwordModel->get($email, $password);
     if (count($user) != 1) {
-      return [
-        "route_to" => "MESSAGE",
-        "qs" => [
-          "domain" => "login",
-          "type" => "err"
-        ]
-      ];
+      return $this->app->redirDescriptor("MESSAGE", "login", "err");
     }
     
     $this->auth->create_user_session($user);

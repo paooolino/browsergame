@@ -356,6 +356,7 @@ foreach ($config as $route_name => $route_config) {
   //$deps_list_topass = '';
   $deps_assign = '';
   $models_content = '';
+  $viewmodels_content = '';
   $action_content = '';
   $invoke_content = '';
   $models_vars = '';
@@ -421,9 +422,14 @@ END_OF_CODE;
   /* === DEVELOPER BEGIN */
   private function doAction(\$request, \$args) {
     // create your action here.
+    // it should return a redirect descriptor.
     die("please create the action by editing the /src/Controller/$filename file");
     return [
-      "status" => "success"
+      "route_to" => "<ROUTE_NAME>",
+      "qs" => [
+        "<key1>" => "<value1>",
+        "..." => "..."
+      ]
     ];
   }
   /* === DEVELOPER END */
@@ -440,6 +446,29 @@ END_OF_CODE;
       $invoke_content .= '    }' . "\r\n"; 
     }
   } else {
+    if (isset($route_config["models"])) {
+      $file_descriptor = <<<END_OF_CODE
+/* === DEVELOPER BEGIN */
+/**
+ *  @status 0 
+ */
+/* === DEVELOPER END */
+END_OF_CODE;
+
+      $models = array_map("trim", explode(",", $route_config["models"]));
+      foreach ($models as $model) {
+        $models_content .= "    \$model = \$this->getdata_${model}Model(\$request, \$args);\r\n";
+        $viewmodels_content .= <<<END_OF_CODE
+  /* === DEVELOPER BEGIN */
+  private function getdata_${model}Model(\$request, \$args) {
+    // call the pure model to retrieve data
+    //return \$this->${model}Model(); 
+  }
+  /* === DEVELOPER END */
+END_OF_CODE;
+      }
+    }
+    
     $templatename = $route_config["template"] . '.php';
     $invoke_content .= "    return \$this->view->render(\$response, '$templatename', [\r\n";
     $invoke_content .= "      \"templateUrl\" => \$this->app->templateUrl,\r\n";
@@ -462,7 +491,7 @@ $models_content
 $invoke_content
   }
   
-$action_content
+${action_content}${viewmodels_content}
 }
 END_OF_CODE;
   
