@@ -7,4 +7,11 @@
  */
 /* === DEVELOPER END */
 ?>
-Please edit the template source file in /templates/default/src/' . message.php
+<?php require __DIR__ . '/partials/' . 'header.php'; ?>
+
+<?php require __DIR__ . '/partials/' . 'menu.php'; ?>
+
+<h2><?php echo $title; ?></h2>
+<p><?php echo $message; ?></p>
+
+<?php require __DIR__ . '/partials/' . 'footer.php'; ?>

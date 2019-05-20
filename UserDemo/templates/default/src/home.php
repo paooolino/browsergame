@@ -3,8 +3,16 @@
 /**
  *  @desc Visualizza una call to action che porta alla pagina d'iscrizione.
  *
- *  @status 0 
+ *  @status 1
  */
 /* === DEVELOPER END */
 ?>
-Please edit the template source file in /templates/default/src/' . home.php
+{{header}}
+
+{{menu}}
+
+<a href="<?php echo $router->pathFor("REGISTER"); ?>">Registrati</a>
+oppure
+<a href="<?php echo $router->pathFor("LOGIN"); ?>">Entra nel sito</a>
+
+{{footer}}

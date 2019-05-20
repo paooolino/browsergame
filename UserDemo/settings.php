@@ -14,7 +14,7 @@
         'HOST' => 'localhost',
         'USER' => 'root',
         'PASS' => '',
-        'DBNAME' => '',
+        'DBNAME' => 'userdemo',
       ],
     ],
   ];

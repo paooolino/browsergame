@@ -3,10 +3,12 @@
 namespace UserDemo\Controller;
 
 class MessageController {
+  private $MessageModel;
   private $view;
   private $app;
   
-  public function __construct($view, $app) {
+  public function __construct($MessageModel, $view, $app) {
+    $this->MessageModel = $MessageModel;
     $this->view = $view;
     $this->app = $app;
   }
@@ -15,6 +17,7 @@ class MessageController {
 
     return $this->view->render($response, 'message.php', [
       "templateUrl" => $this->app->templateUrl,
+      "message" => $message,
     ]);
   }
   

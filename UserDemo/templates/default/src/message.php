@@ -3,8 +3,15 @@
 /**
  *  @desc Visualizza un messaggio. Viene utilizzata come thankyou page dopo un'azione completata correttamente, oppure per notificare un errore.
  *
- *  @status 0 
+ *  @status 1
  */
 /* === DEVELOPER END */
 ?>
-Please edit the template source file in /templates/default/src/' . message.php
+{{header}}
+
+{{menu}}
+
+<h2><?php echo $title; ?></h2>
+<p><?php echo $message; ?></p>
+
+{{footer}}

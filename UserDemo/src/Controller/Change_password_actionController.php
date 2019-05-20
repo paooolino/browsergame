@@ -9,14 +9,22 @@
 namespace UserDemo\Controller;
 
 class Change_password_actionController {
+  private $router;
+  private $app;
   
-  public function __construct() {
+  public function __construct($router, $app) {
+    $this->router = $router;
+    $this->app = $app;
   }
   
   public function __invoke($request, $response, $args) {  
 
-    $response = $this->doAction($request, $response, $args);
-
+    $action_result = $this->doAction($request, $args);
+    $redir = $this->router->pathFor($action_result["route_to"]);
+    if (isset($action_result["qs"])) {
+      $redir .= "?" . http_build_query($action_result["qs"]);
+    }
+    return $response->withRedirect($redir);
 
   }
   

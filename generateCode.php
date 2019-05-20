@@ -77,8 +77,8 @@ function compile_template($src, $dest, $filename, $mainTemplate=false) {
  *  @status 0 
  */
 /* === DEVELOPER END */
-Please edit the template source file in /templates/default/src/partials/' . $subfilename
 ?>
+Please edit the template source file in /templates/default/src/partials/' . $subfilename
 END_OF_CODE;
       create_file($tpl_source_dir, $subfilename, $code);
     }
@@ -239,8 +239,13 @@ foreach ($config as $route_name => $route_config) {
 
   // se c'è un template, aggiunge automaticamente la dipendenza dalla view
   // se c'è la view passo anche app, serve per recuperare la templateUrl
+  // se non lo è, passo router che serve sicuramente per il redirect
+  // passo sempre anche app, può includere funzioni di utilità da usare anche nelle action.
   if (isset($route_config["template"])) {
     $deps[] = '$c->view';
+    $deps[] = '$c->app';
+  } else {
+    $deps[] = '$c->router';
     $deps[] = '$c->app';
   }
   
@@ -359,17 +364,23 @@ foreach ($config as $route_name => $route_config) {
   $deps = [];
   if (isset($route_config["deps"])) {
     $deps = array_map("trim", explode(",", $route_config["deps"]));
-    if (isset($route_config["models"])) {
-      // models are dependencies themselves
-      $deps = array_merge($deps, array_map(function($model) {
-        return ucfirst(trim($model)) . "Model";
-      }, explode(",", $route_config["models"])));
-    }
   }
+  if (isset($route_config["models"])) {
+    // models are dependencies themselves
+    $deps = array_merge($deps, array_map(function($model) {
+      return ucfirst(trim($model)) . "Model";
+    }, explode(",", $route_config["models"])));
+  }
+  
   // se c'è un template, aggiunge automaticamente la dipendenza dalla view
   // se c'è la view passo anche app, serve per recuperare la templateUrl
+  // se non lo è, passo router che serve sicuramente per il redirect
+  // passo sempre anche app, può includere funzioni di utilità da usare anche nelle action.
   if (isset($route_config["template"])) {
     $deps[] = "view";
+    $deps[] = "app";
+  } else {
+    $deps[] = "router";
     $deps[] = "app";
   }
   foreach ($deps as $dep) {
@@ -382,7 +393,6 @@ foreach ($config as $route_name => $route_config) {
     $models = array_map("trim", explode(",", $route_config["models"]));
     foreach ($models as $model) {
       $modelClassName = ucfirst(strtolower($model)) . 'Model';
-      $models_content .= "    \$$model = \$this->$modelClassName" . "->get(\$args);\r\n\r\n";
       $models_vars .= "      \"$model\" => \$$model,\r\n";
     }
   }
@@ -400,11 +410,16 @@ foreach ($config as $route_name => $route_config) {
 END_OF_CODE;
 
     // look for actions
-    $invoke_content .= '    $response = $this->doAction($request, $response, $args);' . "\r\n\r\n";
+    $invoke_content .= '    $action_result = $this->doAction($request, $args);' . "\r\n";
+    $invoke_content .= '    $redir = $this->router->pathFor($action_result["route_to"]);' . "\r\n";
+    $invoke_content .= '    if (isset($action_result["qs"])) {' . "\r\n";
+    $invoke_content .= '      $redir .= "?" . http_build_query($action_result["qs"]);' . "\r\n";
+    $invoke_content .= '    }' . "\r\n";
+    $invoke_content .= '    return $response->withRedirect($redir);' . "\r\n";
     
     $action_content = <<<END_OF_CODE
   /* === DEVELOPER BEGIN */
-  private function doAction(\$request, \$response, \$args) {
+  private function doAction(\$request, \$args) {
     // create your action here.
     die("please create the action by editing the /src/Controller/$filename file");
     return [
@@ -561,7 +576,7 @@ END_OF_CODE;
   
   $custom_content = <<<END_OF_CODE
   /* === DEVELOPER BEGIN */
-  public function get(\$args) {
+  public function get() {
     // retrieve and return requested data here
   }  
   /* === DEVELOPER END */
@@ -645,11 +660,19 @@ class DB {
     }
   }
   
-  public function query(\$query, \$data) {
+  public function select(\$query, \$data) {
     \$sth = \$this->_conn->prepare(\$query);
     \$sth->execute(\$data);
+    if (!\$sth)
+      return [];
     return \$sth->fetchAll(\PDO::FETCH_ASSOC);
   }
+  
+  public function query(\$query, \$data) {
+    \$sth = \$this->_conn->prepare(\$query);
+    \$result = \$sth->execute(\$data);
+    return \$result;
+  } 
 }
 END_OF_CODE;
 create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', 'DB.php', $code);

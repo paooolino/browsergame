@@ -7,4 +7,12 @@
  */
 /* === DEVELOPER END */
 ?>
-Please edit the template source file in /templates/default/src/' . home.php
+<?php require __DIR__ . '/partials/' . 'header.php'; ?>
+
+<?php require __DIR__ . '/partials/' . 'menu.php'; ?>
+
+<a href="<?php echo $router->pathFor("REGISTER"); ?>">Registrati</a>
+oppure
+<a href="<?php echo $router->pathFor("LOGIN"); ?>">Entra nel sito</a>
+
+<?php require __DIR__ . '/partials/' . 'footer.php'; ?>

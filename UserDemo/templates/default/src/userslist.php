@@ -3,8 +3,18 @@
 /**
  *  @desc Visualizza una lista di utenti registrati al sito.
  *
- *  @status 0 
+ *  @status 1
  */
 /* === DEVELOPER END */
 ?>
-Please edit the template source file in /templates/default/src/' . userslist.php
+{{header}}
+
+{{menu}}
+
+<ul>
+<?php foreach ($userslist as $user) { ?>
+  <li><?php echo $user["name"]; ?></li>
+<?php } ?>
+</ul>
+
+{{footer}}

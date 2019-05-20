@@ -13,7 +13,16 @@ class App {
   
   /* === DEVELOPER BEGIN */
   
-  // add your public functions here
+  // ritorna un descrittore di redirect, utile per le action
+  public function redirDescriptor($route, $domain, $type) {
+    return [
+      "route_to" => $route,
+      "qs" => [
+        "domain" => $domain,
+        "type" => $type
+      ]
+    ];
+  }
   
   /* === DEVELOPER END */
 }

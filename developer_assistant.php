@@ -50,6 +50,9 @@ $controllers = array_filter(array_map(function($item) {
 $templates = array_filter(array_map(function($item) {
   return get_file_infos(__DIR__ . '/templates/default/src', $item);
 }, scandir(__DIR__ . '/templates/default/src')));
+$subtemplates = array_filter(array_map(function($item) {
+  return get_file_infos(__DIR__ . '/templates/default/src/partials', $item);
+}, scandir(__DIR__ . '/templates/default/src/partials')));
 
 $models = array_filter(array_map(function($item) {
   return get_file_infos(__DIR__ . '/src/Model', $item);
@@ -157,6 +160,12 @@ foreach ($config as $route_name => $route_config) {
             foreach ($templates as $item) { 
               $routes = $templates_routes[$item["filename"]];
               echo html_item($item, $routes);
+            }
+            ?>
+            <li>---</li>
+            <?php 
+            foreach ($subtemplates as $item) { 
+              echo html_item($item);
             }
             ?>
           </ul>

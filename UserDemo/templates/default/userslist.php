@@ -7,4 +7,14 @@
  */
 /* === DEVELOPER END */
 ?>
-Please edit the template source file in /templates/default/src/' . userslist.php
+<?php require __DIR__ . '/partials/' . 'header.php'; ?>
+
+<?php require __DIR__ . '/partials/' . 'menu.php'; ?>
+
+<ul>
+<?php foreach ($userslist as $user) { ?>
+  <li><?php echo $user["name"]; ?></li>
+<?php } ?>
+</ul>
+
+<?php require __DIR__ . '/partials/' . 'footer.php'; ?>

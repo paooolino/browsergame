@@ -3,8 +3,18 @@
 /**
  *  @desc Visualizza il form per il recuper password.
  *
- *  @status 0 
+ *  @status 1 
  */
 /* === DEVELOPER END */
 ?>
-Please edit the template source file in /templates/default/src/' . lost-password.php
+{{header}}
+
+{{menu}}
+
+<form action="<?php echo $router->pathFor("LOST_PASSWORD_ACTION"); ?>" method="post">
+  Inserisci la tua mail:
+  <input type="email" name="email" />
+  <button type="submit">Invia</button>
+</form>
+
+{{footer}}

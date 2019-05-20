@@ -3,8 +3,20 @@
 /**
  *  @desc Visualizza il form di login.
  *
- *  @status 0 
+ *  @status 1 
  */
 /* === DEVELOPER END */
 ?>
-Please edit the template source file in /templates/default/src/' . login.php
+{{header}}
+
+{{menu}}
+
+<form action="<?php echo $router->pathFor("LOGIN_ACTION"); ?>" method="post">
+  Inserisci la tua mail:
+  <input type="email" name="email" />
+  Password:
+  <input type="password" name="password" />
+  <button type="submit">Entra</button>
+</form>
+
+{{footer}}
