@@ -1,4 +1,76 @@
 <?php
+if (isset($_GET["f"])) {
+  if (isset($_POST["value"])) {
+    $result = file_put_contents($_GET["f"], $_POST["value"]);
+    echo json_encode(["result" => !($result === false)]);
+    die();
+  }
+//
+//
+//
+//
+//
+//
+?>
+<!doctype html>
+<html>
+<head>
+  <style>
+    #editor { 
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="editor"><?php echo htmlspecialchars(file_get_contents($_GET["f"]));?></div>
+
+  <script src="../js/jquery/jquery-3.4.1.min.js"></script>
+  <script src="../js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script>
+      var editor = ace.edit("editor");
+      editor.setTheme("ace/theme/monokai");
+      editor.session.setMode("ace/mode/php");
+      editor.commands.addCommand({
+          name: 'save',
+          bindKey: {win: "Ctrl-S", "mac": "Cmd-S"},
+          exec: function(editor) {
+            $.ajax({
+              url: 'developer_assistant.php?f=' + encodeURIComponent('<?php echo str_replace("\\", "\\\\", $_GET["f"]); ?>'),
+              type: 'post',
+              dataType: 'json',
+              data: {
+                value: editor.session.getValue()
+              },
+              failure: function() {
+                alert('failed');
+              },
+              success: function(json) {
+                if (json.result) {
+                  alert('saved');
+                } else {
+                  alert('failed');
+                }
+              }
+            });
+          }
+      })
+  </script>
+</body>
+</html>
+
+<?php  
+} else {
+//
+//
+//
+//
+//
+//
+//  
 $APP_DIRECTORY = basename(__DIR__);
 function get_file_infos($dir, $file) {
   if (is_file($dir . "/" . $file)) {
@@ -15,7 +87,7 @@ function get_file_infos($dir, $file) {
       }
     }
     if (!empty($result)) {
-      $result["link"] = 'file://' . $dir . '/' . $file ;
+      $result["link"] = '?f=' . rawurlencode($dir . '/' . $file);
       $result["filename"] = $file;
       return $result;
     }
@@ -26,7 +98,7 @@ function html_item($item, $routes=[]) {
   $title = isset($item["desc"]) ? $item["desc"] : "";
   return '
     <li data-routes="' . implode(" ", $routes) . '" class="color-' . $item["status"] . '">
-      <a title="' . str_replace("\"", "&quot;", $title) . '" href="' . $item["link"] . '">' . $item["filename"] . '</a>
+      <a target="_blank" title="' . str_replace("\"", "&quot;", $title) . '" href="' . $item["link"] . '">' . $item["filename"] . '</a>
     </li>
   ';
 }
@@ -212,3 +284,4 @@ foreach ($config as $route_name => $route_config) {
   </script>
 </body>
 </html>
+<?php } ?>

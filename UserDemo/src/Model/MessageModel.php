@@ -3,7 +3,7 @@
 /**
  *  @desc Dati in ingresso $domain e $type, ritorna $title e $message
  *
- *  @status 0 
+ *  @status 1
  */
 /* === DEVELOPER END */
 namespace UserDemo\Model;
@@ -15,8 +15,11 @@ class MessageModel {
   }
   
   /* === DEVELOPER BEGIN */
-  public function get() {
-    // retrieve and return requested data here
+  public function get($domain, $type) {
+    return [
+      "title" => $domain,
+      "description" => $type
+    ];
   }  
   /* === DEVELOPER END */
 }

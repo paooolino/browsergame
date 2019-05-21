@@ -18,9 +18,9 @@ class User_by_username_passwordModel {
   
   /* === DEVELOPER BEGIN */
   public function get($email, $password) {
-    $query = "SELECT * FROM users WHERE email = ?";
+    $query = "SELECT * FROM users WHERE username = ?";
     $result = $this->db->select($query, [$email]);
-    
+
     $authorized = [];
     foreach ($result as $row) {
       if (password_verify($password, $row["password"])) {

@@ -457,12 +457,15 @@ END_OF_CODE;
 
       $models = array_map("trim", explode(",", $route_config["models"]));
       foreach ($models as $model) {
-        $models_content .= "    \$model = \$this->getdata_${model}Model(\$request, \$args);\r\n";
+        $model_class = ucfirst(strtolower($model)) . "Model";
+        $models_content .= "    \$$model = \$this->getdata_${model}Model(\$request, \$args);\r\n";
         $viewmodels_content .= <<<END_OF_CODE
   /* === DEVELOPER BEGIN */
   private function getdata_${model}Model(\$request, \$args) {
-    // call the pure model to retrieve data
-    //return \$this->${model}Model(); 
+    // based on request, get data from the pure model.
+    // \$var = \$request->getParsedBody()['var']; 
+    // \$var = \$request->getQueryParams()['var']; 
+    // return \$this->$model_class->get(\$var);
   }
   /* === DEVELOPER END */
 END_OF_CODE;

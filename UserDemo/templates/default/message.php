@@ -11,7 +11,7 @@
 
 <?php require __DIR__ . '/partials/' . 'menu.php'; ?>
 
-<h2><?php echo $title; ?></h2>
-<p><?php echo $message; ?></p>
+<h2><?php echo $message["title"]; ?></h2>
+<p><?php echo $message["description"]; ?></p>
 
 <?php require __DIR__ . '/partials/' . 'footer.php'; ?>
