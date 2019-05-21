@@ -465,7 +465,7 @@ END_OF_CODE;
     // based on request, get data from the pure model.
     // \$var = \$request->getParsedBody()['var']; 
     // \$var = \$request->getQueryParams()['var']; 
-    // return \$this->$model_class->get(\$var);
+    // return \$this->${model_class}->get(\$var);
   }
   /* === DEVELOPER END */
 END_OF_CODE;

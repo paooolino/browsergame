@@ -3,11 +3,64 @@
 /**
  *  @desc [Please add a description here for this sub-template]
  *
- *  @status 1
+ *  @status 2
  */
 /* === DEVELOPER END */
 ?>
-<hr>
-Copyright (c) <?php echo date("Y"); ?>
-</body>
+    
+    <footer class="page-footer font-small blue pt-4 bg-dark text-light">
+      <div class="container-fluid text-center text-md-left">
+        <div class="row">
+          <div class="col-md-6 mt-md-0 mt-3">
+            <h5 class="text-uppercase">Footer Content</h5>
+            <p>Here you can use rows and columns to organize your footer content.</p>
+          </div>
+          <hr class="clearfix w-100 d-md-none pb-3">
+          <div class="col-md-3 mb-md-0 mb-3">
+            <h5 class="text-uppercase">Links</h5>
+            <ul class="list-unstyled">
+              <li>
+                <a href="#!">Link 1</a>
+              </li>
+              <li>
+                <a href="#!">Link 2</a>
+              </li>
+              <li>
+                <a href="#!">Link 3</a>
+              </li>
+              <li>
+                <a href="#!">Link 4</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-3 mb-md-0 mb-3">
+            <h5 class="text-uppercase">Links</h5>
+            <ul class="list-unstyled">
+              <li>
+                <a href="#!">Link 1</a>
+              </li>
+              <li>
+                <a href="#!">Link 2</a>
+              </li>
+              <li>
+                <a href="#!">Link 3</a>
+              </li>
+              <li>
+                <a href="#!">Link 4</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-copyright text-center py-3">© <?php echo date("Y"); ?> Copyright:
+        <a href="https://mdbootstrap.com/education/bootstrap/">UserDemo</a>
+      </div>
+    </footer>
+
+    <link 
+      rel="stylesheet" 
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
+      crossorigin="anonymous">
+  </body>
 </html>
