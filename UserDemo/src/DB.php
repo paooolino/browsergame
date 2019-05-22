@@ -1,4 +1,11 @@
 <?php
+/* === DEVELOPER BEGIN */
+/**
+ *  @desc Gestione database
+ *
+ *  @status 0 
+ */
+/* === DEVELOPER END */
 namespace UserDemo;
 
 class DB {

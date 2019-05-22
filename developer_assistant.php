@@ -15,6 +15,7 @@ if (isset($_GET["f"])) {
 <!doctype html>
 <html>
 <head>
+  <title><?php $parts = explode("/", $_GET["f"]); echo end($parts); ?></title>
   <style>
     #editor { 
         position: absolute;
@@ -103,7 +104,7 @@ function html_item($item, $routes=[]) {
   $title = isset($item["desc"]) ? $item["desc"] : "";
   return '
     <li data-routes="' . implode(" ", $routes) . '" class="color-' . $item["status"] . '">
-      <a target="_blank" title="' . str_replace("\"", "&quot;", $title) . '" href="' . $item["link"] . '">' . $item["filename"] . '</a>
+      <a target="_' . $item["filename"] . '" title="' . str_replace("\"", "&quot;", $title) . '" href="' . $item["link"] . '">' . $item["filename"] . '</a>
     </li>
   ';
 }
@@ -245,6 +246,11 @@ foreach ($config as $route_name => $route_config) {
               echo html_item($item);
             }
             ?>
+            <li>---</li>
+            <?php echo html_item(get_file_infos(
+              __DIR__ . '/templates/default/css',
+              'style.css'
+            )); ?>
           </ul>
         </td>
         <td valign="top">

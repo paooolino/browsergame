@@ -1,4 +1,11 @@
 <?php
+/* === DEVELOPER BEGIN */
+/**
+ *  @desc Servizio contenente funzioni generali di utilità
+ *
+ *  @status 0 
+ */
+/* === DEVELOPER END */
 namespace UserDemo;
 
 class App {

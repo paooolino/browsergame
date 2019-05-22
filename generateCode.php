@@ -646,6 +646,13 @@ END_OF_CODE;
 
 $code = <<<END_OF_CODE
 <?php
+/* === DEVELOPER BEGIN */
+/**
+ *  @desc Servizio contenente funzioni generali di utilità
+ *
+ *  @status 0 
+ */
+/* === DEVELOPER END */
 namespace $MAIN_NAMESPACE_NAME;
 
 class App {
@@ -668,6 +675,13 @@ create_file(__DIR__ . '/' . $APP_DIRECTORY . '/src', 'App.php', $code);
 // ============================================================================
 $code = <<<END_OF_CODE
 <?php
+/* === DEVELOPER BEGIN */
+/**
+ *  @desc Gestione database
+ *
+ *  @status 0 
+ */
+/* === DEVELOPER END */
 namespace $MAIN_NAMESPACE_NAME;
 
 class DB {
@@ -791,6 +805,9 @@ END_OF_CODE;
 //  css
 // ============================================================================
 $code = <<<END_OF_CODE
+/**
+ *  @status 0 
+ */
 * {margin:0;padding:0;}
 END_OF_CODE;
 create_file(__DIR__ . '/' . $APP_DIRECTORY . '/templates/default/css', 'style.css', $code, false);
