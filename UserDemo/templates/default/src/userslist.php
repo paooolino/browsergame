@@ -11,10 +11,19 @@
 
 {{menu}}
 
-<ul>
-<?php foreach ($userslist as $user) { ?>
-  <li><?php echo $user["name"]; ?></li>
-<?php } ?>
-</ul>
+<div class="contaner-fluid bg-light">
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-4 offset-4">
+        
+        <?php foreach ($userslist as $user) { ?>
+          <li><?php echo $user["username"]; ?></li>
+        <?php } ?>
+        </ul>
+      
+      </div>
+    </div>
+  </div>
+</div>
 
 {{footer}}

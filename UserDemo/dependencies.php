@@ -60,7 +60,7 @@ $container['UserDemo\Controller\Register_confirm_actionController'] = function (
 };
 
 $container['UserDemo\Controller\UserslistController'] = function ($c) {
-  return new UserDemo\Controller\UserslistController($c->view, $c->app);
+  return new UserDemo\Controller\UserslistController($c->UserslistModel, $c->view, $c->app);
 };
 
 $container['UserDemo\Controller\ProfileController'] = function ($c) {
@@ -97,6 +97,10 @@ $container['User_by_username_passwordModel'] = function ($c) {
 
 $container['MessageModel'] = function ($c) {
   return new UserDemo\Model\MessageModel();
+};
+
+$container['UserslistModel'] = function ($c) {
+  return new UserDemo\Model\UserslistModel($c->db);
 };
 
 
